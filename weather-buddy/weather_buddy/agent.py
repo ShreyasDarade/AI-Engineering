@@ -38,8 +38,9 @@ def build_llm(model: str | None = None) -> ChatAnthropic:
     """Create the chat model. Reads ANTHROPIC_API_KEY from the environment."""
     if not os.getenv("ANTHROPIC_API_KEY"):
         raise RuntimeError(
-            "ANTHROPIC_API_KEY is not set. Copy .env.example to .env and add your key, "
-            "or run `python -m weather_buddy --demo` for the no-LLM tour."
+            "ANTHROPIC_API_KEY is not set, so --llm can't start (nothing was sent anywhere). "
+            "Run `python -m weather_buddy` for the free mode, or add a key to .env if you "
+            "specifically want the Claude-powered version -- that one bills your account."
         )
     return ChatAnthropic(
         model=model or os.getenv("WEATHER_BUDDY_MODEL", DEFAULT_MODEL),

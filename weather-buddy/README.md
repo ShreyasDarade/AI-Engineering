@@ -5,8 +5,10 @@ anywhere in the world and it will tell you the numbers, rate the vibe out of 10,
 tell you what to wear, suggest what to do with your day, and — if you name two
 cities — pit them against each other in a **weather showdown**.
 
-Powered by [Claude](https://www.anthropic.com/claude) via LangChain, with live data from
-[Open-Meteo](https://open-meteo.com) (free, no API key, no signup).
+**Runs free by default** — no API key, no account, nothing billable. Weather comes
+from [Open-Meteo](https://open-meteo.com), which is keyless and accountless. An
+optional `--llm` flag swaps the rule-based brain for a Claude-powered LangChain
+agent, if you want that and are happy to spend your own API credits.
 
 ```
 you  ▸ pittsburgh or cairo, which one wins today?
@@ -40,18 +42,31 @@ The model decides which to call. It's told, firmly, never to invent a temperatur
 ```bash
 cd weather-buddy
 pip install -r requirements.txt
-
-cp .env.example .env      # then add your ANTHROPIC_API_KEY
-python -m weather_buddy
+python -m weather_buddy          # free mode. No key, no account, no charges.
 ```
 
-No API key handy? Take the tour — this runs the tools directly, no LLM:
+Other ways to run it:
 
 ```bash
-python -m weather_buddy --demo                    # Pittsburgh vs Cairo
-python -m weather_buddy --demo Tokyo Reykjavik    # pick your own
-python -m weather_buddy --offline --demo          # built-in data, no network either
+python -m weather_buddy --demo                 # scripted tour of the tools, then exit
+python -m weather_buddy --demo Tokyo Cairo     # tour your own cities
+python -m weather_buddy --offline              # built-in city data, zero network calls
+python -m weather_buddy --llm                  # opt in to the Claude agent (see below)
 ```
+
+## Cost, and what talks to what
+
+| Mode | Reaches out to | Can it bill you? |
+| --- | --- | --- |
+| default | Open-Meteo (keyless, accountless) | **No** — there is no account to charge |
+| `--offline` | nothing at all | **No** |
+| `--demo` | Open-Meteo, unless combined with `--offline` | **No** |
+| `--llm` | Open-Meteo **+ the Anthropic API** | **Yes** — your `ANTHROPIC_API_KEY`, your credits |
+
+Only `--llm` can cost money, and only if you set `ANTHROPIC_API_KEY` yourself.
+With no key set, that mode refuses to start rather than connecting to anything.
+No key is stored in this repo; `.env` is gitignored and `.env.example` holds a
+placeholder. LangSmith tracing is not enabled.
 
 ### Sample output
 
@@ -83,22 +98,32 @@ and tomorrow?                 ← it remembers the city you were talking about
 
 In-chat commands: `/help`, `/cities`, `/reset`, `/quit`.
 
+The free brain understands all of the above. It falls back to asking which city
+you meant when it can't parse one; `--llm` handles fuzzier phrasing.
+
 ## How it fits together
 
 ```
-cli.py          REPL + the no-LLM --demo tour
-  └── agent.py      ChatAnthropic + create_tool_calling_agent + AgentExecutor
-        │           WeatherChat adds conversation memory (last 12 exchanges)
+cli.py            one REPL, two interchangeable brains
+  ├── local_brain.py   DEFAULT: keyword routing. Free, offline-capable, no LLM.
+  └── agent.py         --llm ONLY: ChatAnthropic + create_tool_calling_agent
+        │              WeatherChat adds memory (last 12 exchanges)
         └── tools.py      four @tool functions the model can call
               ├── weather_api.py   Open-Meteo client, WMO code table, dataclasses
               └── fun.py           vibe scoring, outfit rules, showdown formatting
 ```
 
-Two deliberate choices:
+Both brains sit behind the same REPL and drive the same underlying functions, so
+the bot behaves the same either way — the LLM just phrases things better and
+handles messages the keyword router doesn't understand.
+
+Three deliberate choices:
 
 - **The tools return finished, formatted text, not JSON.** The model adds
   commentary on top instead of re-reading numbers back to you, and the output
   looks good even on a turn where the model is being lazy.
+- **The LLM is a swappable upgrade, not a dependency.** All the weather logic
+  lives below the tool layer, so the free brain and the Claude agent share it.
 - **`fun.py` is pure and deterministic.** The same weather always yields the
   same vibe score, so the bot's opinions are consistent and the whole scoring
   engine is testable without an LLM in the loop.
@@ -119,14 +144,14 @@ It exists for firewalled networks, planes, and the test suite.
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `ANTHROPIC_API_KEY` | — | Required for chat mode. Not needed for `--demo`. |
-| `WEATHER_BUDDY_MODEL` | `claude-sonnet-5` | Which model answers |
+| `ANTHROPIC_API_KEY` | unset | **Only** used by `--llm`. Leave unset and nothing is billable. |
+| `WEATHER_BUDDY_MODEL` | `claude-sonnet-5` | Which model `--llm` uses |
 | `WEATHER_BUDDY_OFFLINE` | unset | `1` to use built-in demo cities |
 
 ## Tests
 
 ```bash
-python -m pytest -q      # 30 tests, no network, no API key
+python -m pytest -q      # 44 tests, no network, no API key
 ```
 
 `tests/test_agent.py` drives the real `AgentExecutor` with a fake chat model

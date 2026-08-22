@@ -7,6 +7,7 @@ import os
 import sys
 
 from . import fun
+from .local_brain import HELP, LocalBrain
 from .weather_api import WeatherError, get_current, get_forecast, offline_cities
 
 BANNER = r"""
@@ -20,29 +21,67 @@ BANNER = r"""
    your local weather      |___/  gremlin
 """
 
-HELP_TEXT = """
-Try things like:
-    what's it like in Tokyo?
-    should I bring a jacket in London?
-    Pittsburgh vs Cairo
-    give me 5 days for Sydney
+SIGN_OFF = "\nsunny ▸ Go outside. Or don't. I'm a gremlin, not a cop. \U0001f44b"
 
-Commands:
-    /help     this message
-    /cities   cities available in offline mode
-    /reset    forget the conversation so far
-    /quit     leave (or Ctrl-D)
+BILLING_NOTICE = """\
+\u26a0\ufe0f  --llm mode sends your messages to the Anthropic API using your own
+    ANTHROPIC_API_KEY, which is billed to your account. Ctrl-C to back out.
+    The default mode (no --llm) costs nothing.
 """
 
 
-def _print_help() -> None:
-    print(HELP_TEXT)
+def _handle_command(command: str, bot) -> bool:
+    """Handle a /command. Returns False when the user wants to leave."""
+    if command in {"/quit", "/exit", "/q"}:
+        return False
+    if command == "/help":
+        print(f"\n{HELP}\n")
+    elif command == "/cities":
+        print(f"\nOffline cities: {', '.join(offline_cities())}\n")
+    elif command == "/reset":
+        bot.reset()
+        print("\nsunny ▸ Memory wiped. Who are you again?\n")
+    else:
+        print(f"\nUnknown command {command}. Try /help.\n")
+    return True
+
+
+def _repl(bot, answer, subtitle: str) -> int:
+    """Shared chat loop. `answer` turns a message into a reply string."""
+    print(BANNER)
+    print(subtitle + "\n")
+
+    while True:
+        try:
+            user_input = input("you  ▸ ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print(SIGN_OFF)
+            return 0
+
+        if not user_input:
+            continue
+        if user_input.startswith("/"):
+            if not _handle_command(user_input, bot):
+                print(SIGN_OFF)
+                return 0
+            continue
+
+        try:
+            print(f"\nsunny ▸ {answer(user_input)}\n")
+        except Exception as exc:  # noqa: BLE001 - never kill the REPL on one bad turn
+            print(f"\nsunny ▸ Something went sideways: {exc}\n", file=sys.stderr)
+
+
+def run_local() -> int:
+    """Default mode: rule-based chat. No LLM, no API key, no charges."""
+    bot = LocalBrain()
+    return _repl(bot, bot.respond, "Free mode -- no LLM, no API key. /help for ideas, /quit to leave.")
 
 
 def run_demo(cities: list[str]) -> int:
     """The no-API-key tour: runs the tools directly, no LLM involved."""
     print(BANNER)
-    print("DEMO MODE -- tools only, no LLM. Add an ANTHROPIC_API_KEY for the chatty version.\n")
+    print("DEMO MODE -- a scripted tour of the tools. No LLM, no API key, no charges.\n")
 
     try:
         for city in cities:
@@ -60,57 +99,34 @@ def run_demo(cities: list[str]) -> int:
         print(f"\U0001f622  {exc}", file=sys.stderr)
         return 1
 
-    print("That's the tour. Run without --demo to actually talk to Sunny.")
+    print("That's the tour. Run without --demo to chat (still free).")
     return 0
 
 
 def run_chat(model: str | None, verbose: bool) -> int:
-    """The real thing: a LangChain agent loop with memory."""
-    # Imported lazily so --demo works without the LangChain stack installed.
+    """Opt-in mode: a LangChain agent driven by Claude. Uses your API credits."""
+    # Imported lazily so the free modes work without the LangChain stack installed.
     from .agent import WeatherChat
 
+    print(BILLING_NOTICE)
     try:
         chat = WeatherChat(model=model, verbose=verbose)
     except RuntimeError as exc:
         print(f"\U0001f6ab  {exc}", file=sys.stderr)
         return 1
 
-    print(BANNER)
-    print("Ask me about the weather anywhere. /help for ideas, /quit to leave.\n")
-
-    while True:
-        try:
-            user_input = input("you  ▸ ").strip()
-        except (EOFError, KeyboardInterrupt):
-            print("\n\nsunny ▸ Go outside. Or don't. I'm a gremlin, not a cop. \U0001f44b")
-            return 0
-
-        if not user_input:
-            continue
-        if user_input in {"/quit", "/exit", "/q"}:
-            print("\nsunny ▸ Go outside. Or don't. I'm a gremlin, not a cop. \U0001f44b")
-            return 0
-        if user_input == "/help":
-            _print_help()
-            continue
-        if user_input == "/cities":
-            print(f"\nOffline cities: {', '.join(offline_cities())}\n")
-            continue
-        if user_input == "/reset":
-            chat.reset()
-            print("\nsunny ▸ Memory wiped. Who are you again?\n")
-            continue
-
-        try:
-            print(f"\nsunny ▸ {chat.ask(user_input)}\n")
-        except Exception as exc:  # noqa: BLE001 - never kill the REPL on one bad turn
-            print(f"\nsunny ▸ Something went sideways: {exc}\n", file=sys.stderr)
+    return _repl(chat, chat.ask, "LLM mode -- powered by Claude. /help for ideas, /quit to leave.")
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="weather_buddy",
         description="Sunny: a LangChain weather chatbot with opinions.",
+    )
+    parser.add_argument(
+        "--llm",
+        action="store_true",
+        help="Use the Claude-powered LangChain agent. Requires ANTHROPIC_API_KEY and bills your account.",
     )
     parser.add_argument(
         "--demo",
@@ -130,4 +146,7 @@ def main(argv: list[str] | None = None) -> int:
         cities = args.demo or ["Pittsburgh", "Cairo"]
         return run_demo(cities)
 
-    return run_chat(model=args.model, verbose=args.verbose)
+    if args.llm:
+        return run_chat(model=args.model, verbose=args.verbose)
+
+    return run_local()
