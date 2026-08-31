@@ -447,6 +447,24 @@ const WEATHER = {
    --------------------------------------------------------------------- */
 const D = (min, to, note) => ({ k:"drive", min, to, note });
 const S = (min, at, title, note) => ({ k:"stop", min, at, title, note });
+/* A drive whose length depends on where you're sleeping. */
+const DL = (leg, to, note) => ({ k:"drive", baseLeg:leg, to, note });
+
+const BASES = {
+  coarsegold:{
+    nm:"Coarsegold Airbnb", short:"Coarsegold", place:"airbnb",
+    blurb:"42786 Revis Way — about 1 hour to the South Entrance and 2 hours to Yosemite Valley.",
+    sunStart:"4:15", monStart:"11:00",
+    legs:{ toTunnelView:115, fromGlacier:150, fromOlmsted:200, fromValley:150, fromTenaya:200, toOakhurst:20 },
+  },
+  valley:{
+    nm:"Inside Yosemite Valley", short:"the Valley", place:"curry",
+    blurb:"Curry Village, the Lodge or a Pines campground. You skip the entrance queue every morning and Sunday's alarm moves back 90 minutes.",
+    sunStart:"5:45", monStart:"9:30",
+    legs:{ toTunnelView:25, fromGlacier:70, fromOlmsted:80, fromValley:15, fromTenaya:90, toOakhurst:110 },
+  },
+};
+const base = () => BASES[state.base] || BASES.coarsegold;
 
 const DAYS = [
   {
@@ -487,7 +505,7 @@ const DAYS = [
           S(20,"craneflat","Fuel + snacks at Crane Flat","Second-to-last gas. There is NO fuel in Yosemite Valley."),
           D(95,"glacier","Big Oak Flat Rd → Wawona Rd → Glacier Point Rd. Slow, winding, worth it."),
           S(145,"glacier","Glacier Point — sunset + stars","Sunset 19:20. Sentinel Dome is a 2.2-mi round trip from the trailhead if you want it. Then stay: the moon is a 37% crescent that doesn't rise until after midnight, so it is properly dark."),
-          D(150,"airbnb","Glacier Point Rd → Wawona → South Entrance → Coarsegold."),
+          DL("fromGlacier","airbnb","Glacier Point Rd down, then home."),
         ]},
       a:{ name:"As written — Tuolumne Grove + Glacier Point", tag:"Your original",
         blurb:"This does fit, but only if the 3-hour open slot stays empty. Tenaya and Olmsted become drive-bys.",
@@ -502,7 +520,7 @@ const DAYS = [
           S(90,"tuolgrove","Tuolumne Grove of Giant Sequoias","2.5 mi round trip, 400 ft down on the way in — which means 400 ft up on the way out, at 6,200 ft."),
           D(95,"glacier","Down Big Oak Flat Rd, then up Glacier Point Rd."),
           S(150,"glacier","Glacier Point — sunset + stars","Sunset 19:20."),
-          D(150,"airbnb","Back down to Coarsegold."),
+          DL("fromGlacier","airbnb","Back down off the mountain."),
         ]},
       b:{ name:"Indian Rock + Olmsted sunset", tag:"Costs you the most",
         blurb:"The version where the open slot gets used. Indian Rock is Yosemite's only natural arch and it is a real hike — 6 mi round trip. But finishing the day at Olmsted puts you 3h20m from the Airbnb in the dark, so you get home LATER than either plan above.",
@@ -517,30 +535,30 @@ const DAYS = [
           S(210,"indianrock","Indian Rock arch","6 mi round trip, ~1,000 ft of gain at 8,000+ ft. The only natural arch in Yosemite. Budget 3.5 hrs with nine people."),
           D(15,"olmsted","Back west on Tioga Road."),
           S(150,"olmsted","Olmsted Point — sunset + stars","Sunset 19:20. Big open granite, no crowds after dark."),
-          D(200,"airbnb","The long way home: Tioga Rd → Crane Flat → Wawona → Coarsegold."),
+          DL("fromOlmsted","airbnb","The long way home, all of it in the dark."),
         ]},
     },
   },
   {
     id:"sun", date:"2026-09-06", label:"Sun", name:"Valley day",
-    kind:"chain", start:"4:15", drive:"~225 mi",
+    kind:"chain", startBase:"sunStart", start:"4:15", drive:"~225 mi",
     variants:{
       a:{ name:"Sunrise + Mist Trail + Valley floor", tag:"Recommended",
         blurb:"A full day that still gets you back for the hot tub in daylight. Assumes you did Tenaya on Saturday — it is a 5-hour round-trip detour from the Valley and only 40 minutes off the Tioga route.",
         steps:[
-          D(115,"tunnelview","Coarsegold → Oakhurst → South Entrance → Wawona → Tunnel View. Dark, deer on the road, no traffic."),
+          DL("toTunnelView","tunnelview","Dark, deer on the road, no traffic. The one drive of the trip with nobody else on it."),
           S(45,"tunnelview","Tunnel View at sunrise","Sunrise 6:33 — be there by 6:15 for the glow before it. The old walkway inside the tunnel's east portal opens onto a quieter view; walk it single file, facing traffic."),
           D(25,"curry","Down into the Valley."),
           S(25,"curry","Park once and don't move the car","Trailhead lot is closest to Happy Isles; Curry Village is a mile out. Both are full by 08:30 on a holiday Sunday. This is the single most time-critical moment of the trip.", ),
           S(330,"happyisles","Mist Trail to Nevada Fall","6.6 mi round trip, 2,200 ft. Vernal Fall top is 1.7 mi / 1,100 ft if the group wants to split. September means low water — the granite staircase will be dry, not slick, and you will NOT get misted. Bring 2L each; it is exposed."),
           S(60,"curry","Lunch — Curry Village pizza deck","You have earned it. Expect a queue."),
           S(120,"village","Valley floor","Sentinel Bridge for the Half Dome reflection, El Capitan Meadow to spot climbers, Cook's Meadow loop. Bike rental at Curry or the Lodge if legs allow."),
-          D(150,"airbnb","Valley → Wawona → South Entrance → Coarsegold."),
+          DL("fromValley","airbnb","Out of the Valley and home."),
         ]},
       b:{ name:"…plus Tenaya Lake", tag:"Your original",
         blurb:"Only makes sense if Saturday skipped Tenaya. From the Valley it is 90 minutes up and 3h20m home from there — you would be back around 21:35 on the day you planned to party.",
         steps:[
-          D(115,"tunnelview","Coarsegold → Tunnel View."),
+          DL("toTunnelView","tunnelview","Out to Tunnel View in the dark."),
           S(45,"tunnelview","Tunnel View at sunrise","Sunrise 6:33."),
           D(25,"curry","Down into the Valley."),
           S(25,"curry","Park once and don't move the car","Full by 08:30 on a holiday."),
@@ -549,12 +567,12 @@ const DAYS = [
           S(90,"village","Valley floor","Trimmed to fit Tenaya in."),
           D(90,"tenaya","Back up Big Oak Flat Rd and east on Tioga Road."),
           S(60,"tenaya","Tenaya Lake picnic","Beautiful. Also 3h20m from your bed."),
-          D(200,"airbnb","The long way home in the dark."),
+          DL("fromTenaya","airbnb","The long way home in the dark."),
         ]},
       c:{ name:"…plus Glacier Point sunset", tag:"If Saturday skipped it",
         blurb:"The catch-up option. Glacier Point is only an hour from the Valley and roughly on the way home, so it costs far less than Tenaya does.",
         steps:[
-          D(115,"tunnelview","Coarsegold → Tunnel View."),
+          DL("toTunnelView","tunnelview","Out to Tunnel View in the dark."),
           S(45,"tunnelview","Tunnel View at sunrise","Sunrise 6:33."),
           D(25,"curry","Down into the Valley."),
           S(25,"curry","Park once and don't move the car"),
@@ -563,19 +581,19 @@ const DAYS = [
           S(90,"village","Valley floor"),
           D(60,"glacier","Up Glacier Point Road."),
           S(165,"glacier","Glacier Point — sunset + stars","Sunset 19:18. Half Dome straight ahead, Nevada Fall below — including the trail you climbed this morning."),
-          D(150,"airbnb","Down to Coarsegold."),
+          DL("fromGlacier","airbnb","Down off Glacier Point Road."),
         ]},
     },
   },
   {
     id:"mon", date:"2026-09-07", label:"Mon", name:"Railroad & home",
-    kind:"chain", start:"11:00", drive:"~300 mi", split:true,
+    kind:"chain", startBase:"monStart", start:"11:00", drive:"~300 mi", split:true,
     variants:{
       a:{ name:"Railroad, then split for home", tag:"The only version that works",
         blurb:"Two cars leave Fish Camp going different places. The airport car cannot also do the Palo Alto hot tub — see the split below.",
         steps:[
           S(20,"airbnb","Checkout sweep","Chargers, the fridge, the one shoe under the couch. “Leave with deeper friendships.” — Kshitiz"),
-          D(20,"oakhurst","Down Highway 41."),
+          DL("toOakhurst","oakhurst","Down Highway 41."),
           S(40,"oakhurst","Brunch in Oakhurst","Last real town. Sit-down places fill on Labor Day — 40 minutes is the honest budget for nine people."),
           D(25,"railroad","Up to Fish Camp, 4 miles south of the South Entrance."),
           S(90,"railroad","Sugar Pine Railroad","Book this now — Labor Day Monday. Steam train 13:00, one hour, 4-mile round trip through old logging grades. Be there 12:45."),
@@ -690,7 +708,7 @@ const FUEL = [
   { nm:"Wawona", key:"wawona", when:"Sunday, either direction", hrs:"24h pumps (card)",
     why:"The in-park option on the Highway 41 side. Between the Valley and the South Entrance.", tone:"ok" },
   { nm:"Valero, Coarsegold", key:"valero", when:"Evenings", hrs:"Closes 22:00",
-    why:"Nearest to the Airbnb — but you are arriving after 23:00 on Saturday, so it will be shut.", tone:"warn" },
+    why:"Nearest to the Coarsegold Airbnb. Closes at 22:00, so a late Saturday finish means it is shut.", tone:"warn" },
   { nm:"Chukchansi", key:"chukchansi", when:"Any hour", hrs:"24/7",
     why:"Open all night, with food. Your fallback for both late arrivals.", tone:"ok" },
 ];
@@ -773,19 +791,23 @@ function dayIndexFor(dateStr){ return TRIP_DATES.indexOf(dateStr); }
    ===================================================================== */
 function runChain(day, variantKey){
   const v = day.variants[variantKey] || day.variants[Object.keys(day.variants)[0]];
-  let t = hm(day.start);
+  const B = base();
+  let t = hm(day.startBase ? B[day.startBase] : day.start);
+  const startMin0 = t;
   const out = [];
   for (const st of v.steps){
+    const min = st.baseLeg ? B.legs[st.baseLeg] : st.min;
+    const to  = st.to === "airbnb" ? B.place : st.to;
     const start = t;
-    t += st.min;
-    out.push(Object.assign({}, st, { start, end:t }));
+    t += min;
+    out.push(Object.assign({}, st, { min, to, start, end:t }));
   }
   const sun = SUN[day.date];
   return {
     variant:v, key:variantKey, rows:out,
-    startMin: hm(day.start), endMin: t,
-    driveMin: v.steps.filter(s=>s.k==="drive").reduce((a,s)=>a+s.min,0),
-    stopMin:  v.steps.filter(s=>s.k==="stop").reduce((a,s)=>a+s.min,0),
+    startMin: startMin0, endMin: t,
+    driveMin: out.filter(s=>s.k==="drive").reduce((a,s)=>a+s.min,0),
+    stopMin:  out.filter(s=>s.k==="stop").reduce((a,s)=>a+s.min,0),
     sunset: sun ? hm(sun.set) : null,
     sunrise: sun ? hm(sun.rise) : null,
   };
@@ -817,6 +839,7 @@ const LS = {
 
 const state = {
   me:        LS.get("me", null),
+  base:      LS.get("base", "coarsegold"),
   plan:      LS.get("plan",    { sat:"c", sun:"a", mon:"a" }),
   cars:      LS.get("cars",    CARS_SEED),
   packing:   LS.get("packing", {}),        /* id -> {done:bool, by:id} */
@@ -832,7 +855,7 @@ let SAMPLE = null;
 let DOWNLOADS = null;
 let syncMode = "local";        /* 'local' | 'live' */
 
-const DOCS = { plan:"trip/plan", cars:"trip/cars", packing:"trip/packing", votes:"trip/votes", ratings:"trip/ratings" };
+const DOCS = { base:"trip/base", plan:"trip/plan", cars:"trip/cars", packing:"trip/packing", votes:"trip/votes", ratings:"trip/ratings" };
 
 function persist(kind){
   LS.set(kind, state[kind]);
@@ -932,8 +955,8 @@ function askContext(){
   const bits = ["You are a trip assistant for nine friends visiting Yosemite over Labor Day weekend 2026 (Fri 4 – Mon 7 September).",
     "Answer only from the trip facts below plus general Yosemite knowledge. Be concrete and brief — five sentences at most. If you do not know, say so and name who to call.",
     "", "TRIP FACTS:",
-    "- Nine people, three cars, based at an Airbnb in Coarsegold (about 2 hours from Yosemite Valley, 1 hour from the South Entrance).",
-    "- Saturday: leave the Bay Area 5:00a, Sonora Pass (CA-108) to Mono Lake ~11:15a, fuel and lunch at Lee Vining (LAST FUEL before the park), enter at Tioga Pass ~1:35p, then Tenaya Lake and Olmsted Point, Glacier Point for the 7:20p sunset, back to Coarsegold ~11:30p.",
+    "- Nine people, three cars, based at: " + base().nm + ". " + base().blurb,
+    "- Saturday: leave the Bay Area 5:00a, Sonora Pass (CA-108) to Mono Lake ~11:15a, fuel and lunch at Lee Vining (LAST FUEL before the park), enter at Tioga Pass ~1:35p, then Tenaya Lake and Olmsted Point, Glacier Point for the 7:20p sunset, back to base late.",
     "- Sunday: leave 4:15a, Tunnel View for the 6:33a sunrise, park at Curry Village by 7:20a, Mist Trail to Nevada Fall (6.6 mi, 2,200 ft), Valley floor, back ~6:45p.",
     "- Monday: checkout 11:00a, brunch in Oakhurst, Sugar Pine Railroad at Fish Camp 1:00p, then split — one car straight to SFO for a 9:30p flight, the rest to Palo Alto.",
     "- No entrance reservations are required in Yosemite in 2026. Entry is $35 per vehicle, good 7 days.",
@@ -1233,7 +1256,7 @@ function quickJump(){
 function renderPlan(){
   const p = document.getElementById("p-plan");
   const now = paNow();
-  const kids = [];
+  const kids = [ baseCard() ];
   kids.push(el("div",{class:"seg"}, DAYS.map(d => el("button",{
     "aria-pressed": String(state.viewDay === d.id),
     onclick:()=>{ state.viewDay = d.id; render(); },
@@ -1334,6 +1357,22 @@ const NOTES = {
         ["cool","Mariposa Grove is 45 minutes away.","If Saturday ran out of road and you never got sequoias, the grove is right by Fish Camp. It needs 2–3 hours, so it is an either/or with the railroad, not a both."] ],
   tue:[ ["warn","Somebody drives at 04:00 on no sleep.","Two 06:00 departures. Decide who is driving on Monday night, and let them skip the last round of the party."] ],
 };
+function baseCard(){
+  return card([
+    head("Where we're sleeping", "re-times everything"),
+    el("div",{class:"card-pad",style:"padding-top:8px;display:flex;flex-direction:column;gap:8px"},[
+      el("div",{class:"seg"}, Object.entries(BASES).map(([k,b]) => el("button",{
+        "aria-pressed": String(state.base === k),
+        onclick:()=>{ state.base = k; persist("base"); render(); },
+        text: b.nm,
+      }))),
+      el("div",{class:"hint sm",text: base().blurb}),
+      state.base === "coarsegold"
+        ? el("div",{class:"tiny muted",text:"Every departure time in the app is built from here. Switch it and all four days re-time themselves."})
+        : flag("warn","Valley base assumed.","Sunday's alarm moves to 5:45a and Saturday gets about 80 minutes back. Confirm the booking before anyone plans around these times."),
+    ]),
+  ]);
+}
 function planNotes(day){
   const rows = NOTES[day.id] || [];
   if (!rows.length) return null;
@@ -1762,25 +1801,48 @@ function relTime(ts){
 /* =====================================================================
    NO SIGNAL — built to be screenshotted
    ===================================================================== */
+const OFF_SPEC = [
+  { d:"fri", fixed:"20:00", txt:"Fuel all cars at Costco — closes 22:00. Pack tonight." },
+  { d:"sat", at:"start",              txt:"LEAVE. Sonora Pass (CA-108) to Mono Lake, ~6h15m." },
+  { d:"sat", m:/Tioga Gas Mart/,      txt:"Lee Vining — LAST FUEL BEFORE YOSEMITE. 6:30a–9p." },
+  { d:"sat", m:/Entrance station/,    txt:"Tioga Pass entrance. $35/car, covers Sunday." },
+  { d:"sat", m:/Glacier Point|Olmsted Point —/, txt:"Sunset spot. Sunset 7:20p, dark ~8:50p, no moon." },
+  { d:"sat", at:"end",                txt:null, fn:()=>"Back at " + base().short + "." +
+      (state.base === "coarsegold" ? " Valero shuts at 10p — Chukchansi is 24h." : "") },
+  { d:"sun", at:"start",              txt:"LEAVE. This is the alarm that makes the day work." },
+  { d:"sun", m:/Tunnel View/,         txt:"Tunnel View. Sunrise 6:33a." },
+  { d:"sun", m:/Park once/,           txt:"Park at Curry / Trailhead lot. PARK ONCE. Full by 8:30a." },
+  { d:"sun", m:/Mist Trail/,          txt:"On the Mist Trail. 6.6 mi, 2,200 ft." },
+  { d:"sun", at:"end",                txt:null, fn:()=>"Back at " + base().short + "." },
+  { d:"mon", at:"start",              txt:"Checkout, then brunch in Oakhurst." },
+  { d:"mon", m:/Sugar Pine/,          txt:"Fish Camp for the 1:00p train. Be there 12:45p." },
+  { d:"mon", at:"end",                txt:"Airport car reaches SFO. Flights at 9:30p." },
+  { d:"tue", fixed:"04:00",           txt:"Leave for SFO. Dipto + Nachiket fly at 6:00a." },
+];
+function offlineRows(){
+  const out = [];
+  for (const spec of OFF_SPEC){
+    const day = DAYS.find(x => x.id === spec.d);
+    if (!day) continue;
+    let when = null;
+    if (spec.fixed) when = hm(spec.fixed);
+    else {
+      const res = runChain(day, state.plan[day.id]);
+      if (spec.at === "start")    when = res.startMin;
+      else if (spec.at === "end") when = res.endMin;
+      else {
+        const hit = res.rows.find(r => r.title && spec.m.test(r.title));
+        if (!hit) continue;
+        when = hit.start;
+      }
+    }
+    out.push([day.label + " " + fmt(when), spec.fn ? spec.fn() : spec.txt]);
+  }
+  return out;
+}
 function renderOffline(){
   const p = document.getElementById("p-offline");
-  const rows = [
-    ["Fri 20:00","Fuel all cars at Costco — closes 22:00. Pack tonight."],
-    ["Sat 5:00a","LEAVE. Sonora Pass (CA-108) to Mono Lake, ~6h15m."],
-    ["Sat 12:30p","Lee Vining — LAST FUEL BEFORE YOSEMITE. Tioga Gas Mart, 6:30a–9p."],
-    ["Sat 1:35p","Tioga Pass entrance. $35/car, covers Sunday."],
-    ["Sat 6:35p","Glacier Point. Sunset 7:20p. Dark ~8:50p, no moon."],
-    ["Sat 11:30p","Back at the Airbnb. Valero is shut — Chukchansi is 24h."],
-    ["Sun 4:15a","LEAVE. This is the alarm that makes the day work."],
-    ["Sun 6:15a","Tunnel View. Sunrise 6:33a."],
-    ["Sun 7:20a","Park at Curry / Trailhead lot. PARK ONCE. Lots full by 8:30a."],
-    ["Sun 7:45a","On the Mist Trail. 6.6 mi, 2,200 ft, back ~1:15p."],
-    ["Sun 6:45p","Back at the Airbnb."],
-    ["Mon 11:00a","Checkout. Brunch in Oakhurst."],
-    ["Mon 12:45p","Fish Camp for the 1:00p train."],
-    ["Mon 2:15p","Split — airport car direct to SFO, ~6:45p."],
-    ["Tue 4:00a","Leave for SFO. Dipto + Nachiket fly at 6:00a."],
-  ];
+  const rows = offlineRows();
   const places = [
     ["Airbnb","42786 Revis Way, Coarsegold CA 93614"],
     ["24h fuel + food","Chukchansi Gold, Coarsegold"],

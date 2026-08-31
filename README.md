@@ -12,7 +12,7 @@ Nine tabs, all usable with no network once the page has loaded:
 | Tab | What it's for |
 |---|---|
 | **Now** | Live trip clock. What's happening this minute, a countdown to the next hard deadline, sun times, and a ribbon of the whole day. |
-| **Plan** | The itinerary as a **time-budget engine** — every stop and drive leg carries a duration, the day sums itself, and it reports when you actually get back. Saturday and Sunday each have selectable variants with the arrival math side by side. |
+| **Plan** | Lodging base toggle, plus the itinerary as a **time-budget engine** — every stop and drive leg carries a duration, the day sums itself, and it reports when you actually get back. Saturday and Sunday each have selectable variants with the arrival math side by side. |
 | **Drive** | Sonora Pass vs through-the-park, the full fuel plan (there is no gas in Yosemite Valley), and links out to live road, webcam, AQI and fire sources. |
 | **Crowds** | Hour-by-hour rush levels for eight locations, modelled from reported holiday patterns. Clearly labelled as estimates, not a live feed. |
 | **Map** | Hand-drawn SVG schematics of the loop and eastern Yosemite Valley — no tiles, no network. Numbered pins tap out to real navigation. |
@@ -28,11 +28,17 @@ Nine tabs, all usable with no network once the page has loaded:
   The Valley, Tioga Road and Glacier Point have effectively no cell service.
 - **The time-budget engine** (`runChain` / `verdictFor`) is the core. Change one
   `min` value in `DAYS` and every downstream arrival time re-computes.
-- **Runtime capabilities:** `sample` (in-app trip Q&A) and `downloads` (recap +
-  offline copy). Both degrade to hidden when `claude.use()` returns `null`.
-  Live multi-device sync via `db` is deliberately not declared — it would make
-  the artifact organization-internal and block sharing outside the owner's
-  Claude workspace.
+- **Runtime capabilities:** `db` (shared live state), `sample` (in-app trip
+  Q&A) and `downloads` (recap + offline copy). All three degrade gracefully
+  when `claude.use()` returns `null` — with no `db` the app still works fully,
+  backed by `localStorage`, and says so in the sync banner. Note that declaring
+  `db` makes the artifact organization-internal: viewers must be signed into
+  the owner's Claude workspace.
+- **Lodging base toggle.** `BASES` holds two bases (Coarsegold and inside
+  Yosemite Valley) with their own start times and drive legs. Steps built with
+  `DL()` resolve their duration from the active base, so switching re-times all
+  four days. The No Signal card derives its times from the same engine via
+  `offlineRows()`, so it cannot drift from the plan.
 - **Themes.** Full light and dark token sets defined at bare `:root`, under
   `prefers-color-scheme`, and under `[data-theme]`, so all three viewer states
   resolve.
