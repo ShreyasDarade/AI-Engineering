@@ -1,0 +1,2102 @@
+<title>Nine Over Tioga</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --bg:#F1EFE9; --surface:#FBFAF7; --surface-2:#E7E3DA; --sunk:#DFDACF;
+  --line:#D3CDC1; --line-soft:#E3DED4;
+  --ink:#191C20; --ink-2:#4B5058; --ink-3:#7A808A;
+  --accent:#B94E1C; --accent-ink:#B94E1C; --accent-soft:#F4E0D3; --on-accent:#FFFFFF;
+  --cool:#2A657F; --cool-soft:#DBE7ED;
+  --ok:#3B7549; --ok-soft:#DCE9DE;
+  --warn:#9E7015; --warn-soft:#F3E7CC;
+  --bad:#A63929; --bad-soft:#F3DBD6;
+  --shadow:0 1px 2px rgba(25,28,32,.06), 0 4px 14px rgba(25,28,32,.05);
+  --r:12px; --r-sm:8px;
+  --f-display:'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --f-body:'Source Sans 3', system-ui, -apple-system, sans-serif;
+  --f-mono:'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111419; --surface:#191D23; --surface-2:#222730; --sunk:#0C0F13;
+    --line:#2D333C; --line-soft:#242A32;
+    --ink:#ECE8E1; --ink-2:#A5ABB5; --ink-3:#737A85;
+    --accent:#E8834E; --accent-ink:#F0996A; --accent-soft:#3A2116; --on-accent:#171208;
+    --cool:#6DA9C7; --cool-soft:#162A35;
+    --ok:#63A876; --ok-soft:#16281B;
+    --warn:#D5A73E; --warn-soft:#2C2413;
+    --bad:#D96D5C; --bad-soft:#301813;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111419; --surface:#191D23; --surface-2:#222730; --sunk:#0C0F13;
+  --line:#2D333C; --line-soft:#242A32;
+  --ink:#ECE8E1; --ink-2:#A5ABB5; --ink-3:#737A85;
+  --accent:#E8834E; --accent-ink:#F0996A; --accent-soft:#3A2116; --on-accent:#171208;
+  --cool:#6DA9C7; --cool-soft:#162A35;
+  --ok:#63A876; --ok-soft:#16281B;
+  --warn:#D5A73E; --warn-soft:#2C2413;
+  --bad:#D96D5C; --bad-soft:#301813;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
+}
+
+/* ============ BASE ============ */
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--f-body); font-size:16px; line-height:1.5;
+  -webkit-text-size-adjust:100%; overflow-x:hidden;
+}
+.wrap{max-width:600px; margin:0 auto; padding:0 0 96px}
+h1,h2,h3,h4{font-family:var(--f-display); margin:0; text-wrap:balance; letter-spacing:-.015em}
+p{margin:0}
+button{font:inherit; color:inherit; cursor:pointer; border:none; background:none}
+a{color:var(--accent-ink); text-decoration-thickness:1px; text-underline-offset:2px}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:4px}
+.mono{font-family:var(--f-mono); font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){ *{animation-duration:.01ms!important; transition-duration:.01ms!important} }
+
+/* ============ HEADER ============ */
+header.top{
+  position:sticky; top:0; z-index:60; background:var(--bg);
+  border-bottom:1px solid var(--line);
+}
+.brandrow{display:flex; align-items:center; gap:10px; padding:12px 16px 8px}
+.mark{
+  width:34px; height:34px; flex:none; border-radius:8px; background:var(--ink);
+  display:grid; place-items:center;
+}
+.mark svg{display:block}
+.brand h1{font-size:19px; font-weight:800; line-height:1.05}
+.brand .sub{
+  font-family:var(--f-mono); font-size:10.5px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink-3); margin-top:2px;
+}
+.clockbox{margin-left:auto; text-align:right; flex:none}
+.clockbox .t{font-family:var(--f-mono); font-size:17px; font-weight:600; line-height:1}
+.clockbox .d{font-family:var(--f-mono); font-size:10px; color:var(--ink-3); letter-spacing:.06em; text-transform:uppercase; margin-top:3px}
+
+/* tab rail */
+nav.rail{display:flex; gap:2px; overflow-x:auto; padding:0 10px 0; scrollbar-width:none; -webkit-overflow-scrolling:touch}
+nav.rail::-webkit-scrollbar{display:none}
+nav.rail button{
+  flex:none; padding:9px 11px 10px; font-family:var(--f-display); font-size:12px;
+  font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--ink-3);
+  border-bottom:2.5px solid transparent; white-space:nowrap;
+}
+nav.rail button[aria-selected="true"]{color:var(--accent-ink); border-bottom-color:var(--accent)}
+nav.rail button:hover{color:var(--ink-2)}
+nav.rail button[aria-selected="true"]:hover{color:var(--accent-ink)}
+
+/* ============ SECTIONS / CARDS ============ */
+section[role="tabpanel"]{padding:14px 16px 0; display:flex; flex-direction:column; gap:14px}
+.card{background:var(--surface); border:1px solid var(--line-soft); border-radius:var(--r); box-shadow:var(--shadow); overflow:hidden}
+.card-pad{padding:14px}
+.card-head{display:flex; align-items:baseline; gap:8px; padding:13px 14px 0}
+.card-head h2{font-size:15px; font-weight:700}
+.card-head h3{font-size:14px; font-weight:700}
+.eyebrow{
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--ink-3);
+}
+.eyebrow.pin{margin-left:auto; text-align:right; max-width:46%; line-height:1.35}
+.card-head{flex-wrap:wrap}
+.hint{font-size:13.5px; color:var(--ink-2); line-height:1.45}
+.hint.sm{font-size:12.5px}
+.divider{height:1px; background:var(--line-soft); margin:0}
+
+/* pills */
+.pill{
+  display:inline-flex; align-items:center; gap:5px; padding:2px 8px; border-radius:999px;
+  font-family:var(--f-mono); font-size:10.5px; font-weight:500; letter-spacing:.05em;
+  text-transform:uppercase; white-space:nowrap;
+}
+.pill.ok{background:var(--ok-soft); color:var(--ok)}
+.pill.warn{background:var(--warn-soft); color:var(--warn)}
+.pill.bad{background:var(--bad-soft); color:var(--bad)}
+.pill.cool{background:var(--cool-soft); color:var(--cool)}
+.pill.accent{background:var(--accent-soft); color:var(--accent-ink)}
+.pill.plain{background:var(--surface-2); color:var(--ink-2)}
+
+/* ============ HERO / NOW ============ */
+.hero{
+  background:var(--surface); border:1px solid var(--line-soft); border-radius:var(--r);
+  box-shadow:var(--shadow); overflow:hidden;
+}
+.hero-top{padding:14px 14px 12px; display:flex; flex-direction:column; gap:3px}
+.hero-label{display:flex; align-items:center; gap:7px}
+.hero .what{font-family:var(--f-display); font-size:22px; font-weight:800; line-height:1.15}
+.hero .where{font-size:13.5px; color:var(--ink-2)}
+.countdown{
+  display:flex; align-items:baseline; gap:9px; padding:11px 14px;
+  background:var(--sunk); border-top:1px solid var(--line-soft);
+}
+.countdown .big{font-family:var(--f-mono); font-size:26px; font-weight:600; line-height:1; letter-spacing:-.02em}
+.countdown .lbl{font-size:12.5px; color:var(--ink-2); line-height:1.3}
+.countdown.urgent .big{color:var(--accent-ink)}
+
+/* sun strip */
+.sunstrip{display:flex; gap:0; border-top:1px solid var(--line-soft)}
+.sunstrip div{flex:1; padding:9px 6px; text-align:center; border-right:1px solid var(--line-soft)}
+.sunstrip div:last-child{border-right:none}
+.sunstrip .k{font-family:var(--f-mono); font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3)}
+.sunstrip .v{font-family:var(--f-mono); font-size:13.5px; font-weight:600; margin-top:3px; white-space:nowrap}
+
+/* ============ DAY RIBBON (signature) ============ */
+.ribbon-wrap{padding:12px 14px 14px}
+.ribbon{position:relative; width:100%; height:64px; border-radius:var(--r-sm); overflow:hidden; background:var(--sunk)}
+.ribbon svg{display:block; width:100%; height:100%}
+.ribbon-legend{display:flex; flex-wrap:wrap; gap:10px; margin-top:9px}
+.lg{display:flex; align-items:center; gap:5px; font-family:var(--f-mono); font-size:10px; color:var(--ink-3); letter-spacing:.04em; text-transform:uppercase}
+.lg i{width:11px; height:11px; border-radius:3px; display:block; flex:none}
+
+/* ============ TIMELINE ROWS ============ */
+.tl{display:flex; flex-direction:column}
+.tl-row{display:grid; grid-template-columns:58px 1fr; gap:10px; padding:9px 14px; border-top:1px solid var(--line-soft); align-items:start}
+.tl-row:first-child{border-top:none}
+.tl-row.drive{background:var(--sunk)}
+.tl-time{font-family:var(--f-mono); font-size:13px; font-weight:600; padding-top:1px; letter-spacing:-.02em}
+.tl-time small{display:block; font-size:9.5px; font-weight:400; color:var(--ink-3); letter-spacing:.06em; text-transform:uppercase; margin-top:1px}
+.tl-body{min-width:0; display:flex; flex-direction:column; gap:3px}
+.tl-title{font-family:var(--f-display); font-size:14.5px; font-weight:700; line-height:1.25; display:flex; align-items:center; gap:6px; flex-wrap:wrap}
+.tl-note{font-size:12.5px; color:var(--ink-2); line-height:1.4}
+.tl-note strong{color:var(--ink); font-weight:600}
+.tl-row.drive .tl-title{font-family:var(--f-mono); font-size:12px; font-weight:500; letter-spacing:.03em; text-transform:uppercase; color:var(--ink-2)}
+.tl-row.now{background:var(--accent-soft)}
+.tl-row.now .tl-time{color:var(--accent-ink)}
+.tl-links{display:flex; flex-wrap:wrap; gap:6px; margin-top:4px}
+
+/* ============ BUTTONS ============ */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  padding:7px 11px; border-radius:var(--r-sm); border:1px solid var(--line);
+  background:var(--surface-2); font-family:var(--f-display); font-size:12.5px; font-weight:600;
+  color:var(--ink); white-space:nowrap; transition:background .12s ease, border-color .12s ease;
+}
+.btn:hover{background:var(--line-soft); border-color:var(--ink-3)}
+.btn.go{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
+.btn.go:hover{filter:brightness(1.08); background:var(--accent)}
+.btn.sm{padding:4px 8px; font-size:11.5px}
+.btn.ghost{background:transparent}
+.btn.wide{width:100%; white-space:normal}
+.btn.wide .vsum{white-space:normal; display:block}
+.btn[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
+.btnrow{display:flex; gap:8px; flex-wrap:wrap}
+
+/* segmented */
+.seg{display:flex; background:var(--sunk); border:1px solid var(--line-soft); border-radius:var(--r-sm); padding:3px; gap:3px}
+.seg button{
+  flex:1; padding:7px 6px; border-radius:6px; font-family:var(--f-display); font-size:12px;
+  font-weight:700; color:var(--ink-2); letter-spacing:.02em; line-height:1.2;
+}
+.seg button[aria-pressed="true"]{background:var(--surface); color:var(--ink); box-shadow:var(--shadow)}
+
+/* ============ LIST / CHECK ============ */
+.rows{display:flex; flex-direction:column}
+.row{display:flex; align-items:center; gap:10px; padding:10px 14px; border-top:1px solid var(--line-soft)}
+.row:first-child{border-top:none}
+.row .grow{flex:1; min-width:0}
+.row .nm{font-size:14px; font-weight:600; line-height:1.25}
+.row .mt{font-size:12px; color:var(--ink-3); margin-top:1px}
+.chk{
+  width:22px; height:22px; flex:none; border-radius:6px; border:1.5px solid var(--line);
+  background:var(--surface-2); display:grid; place-items:center; transition:all .12s ease;
+}
+.chk[aria-pressed="true"]{background:var(--ok); border-color:var(--ok)}
+.chk svg{opacity:0; width:13px; height:13px}
+.chk[aria-pressed="true"] svg{opacity:1}
+.row.done .nm{text-decoration:line-through; color:var(--ink-3)}
+
+/* avatars */
+.who{display:flex; flex-wrap:wrap; gap:4px}
+.av{
+  width:26px; height:26px; border-radius:50%; display:grid; place-items:center;
+  font-family:var(--f-display); font-size:10.5px; font-weight:700; color:#FFFFFF; flex:none;
+  border:1.5px solid var(--surface);
+}
+.av.lg{width:34px; height:34px; font-size:13px}
+.av.off{opacity:.28}
+.avbtn{border-radius:50%; padding:0; background:none; border:none}
+
+/* ============ FORMS ============ */
+input[type="text"], textarea, select{
+  width:100%; padding:9px 11px; border-radius:var(--r-sm); border:1px solid var(--line);
+  background:var(--surface); color:var(--ink); font-family:var(--f-body); font-size:15px;
+}
+textarea{resize:vertical; min-height:64px; line-height:1.45}
+input::placeholder, textarea::placeholder{color:var(--ink-3)}
+
+/* ============ CROWD METER ============ */
+.crowd{display:flex; flex-direction:column}
+.crowd-row{padding:11px 14px; border-top:1px solid var(--line-soft); display:flex; flex-direction:column; gap:6px}
+.crowd-row:first-child{border-top:none}
+.crowd-top{display:flex; align-items:center; gap:8px}
+.crowd-top .nm{font-family:var(--f-display); font-size:14px; font-weight:700; flex:1; min-width:0}
+.bars{display:flex; gap:1.5px; height:26px; align-items:flex-end}
+.bars i{flex:1; border-radius:2px 2px 0 0; display:block; min-height:3px; background:var(--line); position:relative}
+.bars i.l1{background:var(--ok); height:28%}
+.bars i.l2{background:var(--warn); height:55%}
+.bars i.l3{background:var(--bad); height:82%}
+.bars i.l4{background:var(--bad); height:100%; filter:saturate(1.4)}
+.bars i.nowbar{outline:2px solid var(--ink); outline-offset:1px; z-index:2}
+.hours{display:flex; justify-content:space-between; font-family:var(--f-mono); font-size:9px; color:var(--ink-3); letter-spacing:.04em}
+
+/* ============ MAP ============ */
+.mapbox{background:var(--sunk); border-radius:var(--r-sm); overflow:hidden; margin:0 14px 14px}
+.mapbox svg{display:block; width:100%; height:auto}
+.legendgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(128px,1fr)); gap:7px; padding:0 14px 14px}
+.legendgrid .li{display:flex; align-items:center; gap:6px; font-size:12px; color:var(--ink-2)}
+.legendgrid .li i{width:9px; height:9px; border-radius:50%; flex:none; display:block}
+
+/* ============ OFFLINE CARD ============ */
+.offcard{background:var(--surface); border:1.5px solid var(--ink); border-radius:var(--r); overflow:hidden}
+.offcard h2{
+  font-size:12px; font-weight:800; letter-spacing:.11em; text-transform:uppercase;
+  padding:9px 14px; background:var(--ink); color:var(--bg); display:flex; align-items:center; gap:7px;
+}
+.offgrid{display:flex; flex-direction:column}
+.offrow{display:grid; grid-template-columns:82px 1fr; gap:9px; padding:8px 14px; border-top:1px solid var(--line-soft); font-size:13px; align-items:baseline}
+.offrow:first-child{border-top:none}
+.offrow .k{font-family:var(--f-mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3)}
+.offrow .v{line-height:1.4}
+.offrow .v strong{font-weight:600}
+
+/* ============ LOG / MEMORIES ============ */
+.entry{padding:12px 14px; border-top:1px solid var(--line-soft); display:flex; gap:10px}
+.entry:first-child{border-top:none}
+.entry .ebody{flex:1; min-width:0}
+.entry .emeta{display:flex; align-items:baseline; gap:7px; margin-bottom:3px}
+.entry .ewho{font-family:var(--f-display); font-size:13px; font-weight:700}
+.entry .ewhen{font-family:var(--f-mono); font-size:10px; color:var(--ink-3); letter-spacing:.05em}
+.entry .etext{font-size:14px; line-height:1.5; white-space:pre-wrap; overflow-wrap:anywhere}
+.quote{
+  padding:16px 14px; font-family:var(--f-display); font-size:17px; font-weight:600;
+  line-height:1.4; font-style:italic; color:var(--ink); border-left:3px solid var(--accent);
+  background:var(--accent-soft); margin:0 14px 14px; border-radius:0 var(--r-sm) var(--r-sm) 0;
+}
+.quote cite{display:block; font-family:var(--f-body); font-style:normal; font-size:12.5px; font-weight:400; color:var(--ink-2); margin-top:7px}
+
+/* stars */
+.stars{display:flex; gap:2px}
+.star{width:20px; height:20px; padding:0; color:var(--line)}
+.star.on{color:var(--warn)}
+
+/* ============ SYNC BANNER ============ */
+.sync{
+  display:flex; align-items:center; gap:8px; padding:8px 14px; font-size:12.5px;
+  border-radius:var(--r-sm); background:var(--surface-2); color:var(--ink-2);
+  border:1px solid var(--line-soft);
+}
+.sync .dot{width:7px; height:7px; border-radius:50%; background:var(--ink-3); flex:none}
+.sync.live .dot{background:var(--ok)}
+.sync.local .dot{background:var(--warn)}
+
+/* ============ FLAG / CALLOUT ============ */
+.flag{display:flex; gap:9px; padding:11px 12px; border-radius:var(--r-sm); font-size:13px; line-height:1.45}
+.flag .ic{flex:none; font-family:var(--f-display); font-weight:800; font-size:13px; line-height:1.3}
+.flag.warn{background:var(--warn-soft); color:var(--ink)}
+.flag.bad{background:var(--bad-soft); color:var(--ink)}
+.flag.cool{background:var(--cool-soft); color:var(--ink)}
+.flag.ok{background:var(--ok-soft); color:var(--ink)}
+.flag strong{font-weight:700}
+
+/* verdict bar */
+.verdict{display:flex; align-items:center; gap:9px; padding:11px 14px; border-top:1px solid var(--line-soft)}
+.verdict .vt{font-family:var(--f-display); font-size:13.5px; font-weight:700; flex:1; line-height:1.3}
+.verdict .vn{font-family:var(--f-mono); font-size:15px; font-weight:600}
+
+/* misc */
+.stack{display:flex; flex-direction:column; gap:14px}
+.tight{display:flex; flex-direction:column; gap:8px}
+.scrollx{overflow-x:auto; -webkit-overflow-scrolling:touch}
+.muted{color:var(--ink-3)}
+.tiny{font-size:11.5px; line-height:1.45}
+.footer{padding:22px 16px 8px; text-align:center; font-size:12px; color:var(--ink-3); line-height:1.6}
+.sronly{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0}
+</style>
+
+<div class="wrap">
+
+<header class="top">
+  <div class="brandrow">
+    <div class="mark" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M2 15.5 L7 6 L10.2 11.4 L12.4 8 L18 15.5 Z" fill="#E8834E"/>
+        <circle cx="14.6" cy="4.4" r="2.1" fill="#F1EFE9"/>
+      </svg>
+    </div>
+    <div class="brand">
+      <h1>Nine Over Tioga</h1>
+      <div class="sub">Yosemite · Labor Day 2026</div>
+    </div>
+    <div class="clockbox">
+      <div class="t mono" id="clockTime">--:--</div>
+      <div class="d" id="clockDay">loading</div>
+    </div>
+  </div>
+  <nav class="rail" role="tablist" id="rail"></nav>
+</header>
+
+<main id="panels">
+  <section role="tabpanel" id="p-now"    aria-label="Now"></section>
+  <section role="tabpanel" id="p-plan"   aria-label="Plan" hidden></section>
+  <section role="tabpanel" id="p-drive"  aria-label="Drive" hidden></section>
+  <section role="tabpanel" id="p-crowds" aria-label="Crowds" hidden></section>
+  <section role="tabpanel" id="p-map"    aria-label="Map" hidden></section>
+  <section role="tabpanel" id="p-do"     aria-label="Do" hidden></section>
+  <section role="tabpanel" id="p-crew"   aria-label="Crew" hidden></section>
+  <section role="tabpanel" id="p-offline" aria-label="No signal" hidden></section>
+  <section role="tabpanel" id="p-log"    aria-label="Log" hidden></section>
+</main>
+
+<div class="footer">
+  Built for the nine of us · Sept 4&ndash;8, 2026<br>
+  Times are estimates, not promises. Check the road before you trust the clock.
+</div>
+</div>
+
+<script>
+"use strict";
+
+/* =====================================================================
+   DATA — everything the app knows, baked in so it works with no signal.
+   Times are Pacific. Drive minutes are realistic (not Google-optimistic).
+   ===================================================================== */
+
+const TZ_LABEL = "PT";
+
+const CREW = [
+  { id:"shreyas",  name:"Shreyas",   short:"SD", color:"#B94E1C" },
+  { id:"shivam",   name:"Shivam",    short:"SH", color:"#2A657F" },
+  { id:"simran",   name:"Simran",    short:"SI", color:"#7A4E8C" },
+  { id:"kshitiz",  name:"Kshitiz",   short:"KS", color:"#3B7549" },
+  { id:"ashir",    name:"Ashir",     short:"AS", color:"#9E7015" },
+  { id:"dipto",    name:"Dipto",     short:"DI", color:"#A63929" },
+  { id:"nachiket", name:"Nachiket",  short:"NA", color:"#1F6F6B" },
+  { id:"sadrishya",name:"Sadrishya", short:"SA", color:"#8C4A6B" },
+  { id:"jovina",   name:"Jovina",    short:"JO", color:"#4A5C8C" },
+];
+const byId = id => CREW.find(c => c.id === id);
+
+const PLACES = {
+  sfo:        { name:"SFO",                     q:"San Francisco International Airport" },
+  crisanto:   { name:"Shivam — 1929 Crisanto Ave", q:"1929 Crisanto Ave, Mountain View, CA" },
+  rambla:     { name:"Simran & Kshitiz — 3560 Rambla Pl", q:"3560 Rambla Pl, Palo Alto, CA" },
+  cambria:    { name:"Ashir — Cambria Apartments", q:"Cambria Apartments, Sunnyvale, CA" },
+  costco:     { name:"Costco gas",              q:"Costco Gas Station Mountain View CA" },
+  monolake:   { name:"Mono Lake South Tufa",    q:"Mono Lake South Tufa" },
+  leevining:  { name:"Tioga Gas Mart, Lee Vining", q:"Tioga Gas Mart Whoa Nellie Deli Lee Vining CA" },
+  tiogapass:  { name:"Tioga Pass Entrance",     q:"Tioga Pass Entrance Yosemite" },
+  tuolumne:   { name:"Tuolumne Meadows",        q:"Tuolumne Meadows Yosemite" },
+  tenaya:     { name:"Tenaya Lake",             q:"Tenaya Lake Yosemite" },
+  olmsted:    { name:"Olmsted Point",           q:"Olmsted Point Yosemite" },
+  porcupine:  { name:"Porcupine Creek Trailhead", q:"Porcupine Creek Trailhead Yosemite" },
+  indianrock: { name:"Indian Rock arch",        q:"Indian Rock Yosemite" },
+  craneflat:  { name:"Crane Flat (gas)",        q:"Crane Flat Gas Station Yosemite" },
+  tuolgrove:  { name:"Tuolumne Grove",          q:"Tuolumne Grove Yosemite" },
+  glacier:    { name:"Glacier Point",           q:"Glacier Point Yosemite" },
+  sentinel:   { name:"Sentinel Dome",           q:"Sentinel Dome Trailhead Yosemite" },
+  taft:       { name:"Taft Point",              q:"Taft Point Trailhead Yosemite" },
+  tunnelview: { name:"Tunnel View",             q:"Tunnel View Yosemite" },
+  curry:      { name:"Curry Village parking",   q:"Curry Village Parking Lot Yosemite" },
+  trailhead:  { name:"Trailhead parking lot",   q:"Trailhead Parking Yosemite Valley" },
+  happyisles: { name:"Happy Isles / Mist Trail", q:"Mist Trail and John Muir Trail Trailhead Yosemite" },
+  vernal:     { name:"Vernal Fall footbridge",  q:"Vernal Fall Footbridge Yosemite" },
+  nevada:     { name:"Nevada Fall",             q:"Nevada Fall Yosemite" },
+  village:    { name:"Yosemite Village",        q:"Yosemite Valley Welcome Center" },
+  sentinelbr: { name:"Sentinel Bridge",         q:"Sentinel Bridge Yosemite" },
+  elcap:      { name:"El Capitan Meadow",       q:"El Capitan Meadow Yosemite" },
+  mariposa:   { name:"Mariposa Grove",          q:"Mariposa Grove of Giant Sequoias" },
+  wawona:     { name:"Wawona (gas)",            q:"Wawona Gas Station Yosemite" },
+  southent:   { name:"South Entrance",          q:"Yosemite South Entrance" },
+  oakhurst:   { name:"Oakhurst",                q:"Oakhurst, CA" },
+  chukchansi: { name:"Chukchansi (24h gas + food)", q:"Chukchansi Gold Resort Casino Coarsegold CA" },
+  valero:     { name:"Valero, Coarsegold",      q:"Valero Coarsegold CA" },
+  airbnb:     { name:"Airbnb — 42786 Revis Way", q:"42786 Revis Way, Coarsegold, CA 93614" },
+  railroad:   { name:"Sugar Pine Railroad",     q:"Yosemite Mountain Sugar Pine Railroad Fish Camp CA" },
+};
+const mapsUrl = key => {
+  const p = PLACES[key];
+  return p ? "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(p.q) : "#";
+};
+
+/* Sun times for the trip (Yosemite Valley). */
+const SUN = {
+  "2026-09-04": { rise:"6:31", set:"19:22", darkFrom:"20:52" },
+  "2026-09-05": { rise:"6:32", set:"19:20", darkFrom:"20:50" },
+  "2026-09-06": { rise:"6:33", set:"19:18", darkFrom:"20:48" },
+  "2026-09-07": { rise:"6:34", set:"19:17", darkFrom:"20:46" },
+  "2026-09-08": { rise:"6:35", set:"19:15", darkFrom:"20:44" },
+};
+const WEATHER = {
+  "2026-09-04": { s:"Sunny",              hi:88, lo:56 },
+  "2026-09-05": { s:"Sun, patchy rain PM",hi:84, lo:55 },
+  "2026-09-06": { s:"Partly cloudy",      hi:82, lo:54 },
+  "2026-09-07": { s:"Sunny",              hi:80, lo:53 },
+  "2026-09-08": { s:"Sunny",              hi:82, lo:54 },
+};
+
+/* ---------------------------------------------------------------------
+   THE ITINERARY.
+   'chain' days compute themselves: a start time plus an ordered list of
+   drives and stops. Change one number and the whole day re-times.
+   --------------------------------------------------------------------- */
+const D = (min, to, note) => ({ k:"drive", min, to, note });
+const S = (min, at, title, note) => ({ k:"stop", min, at, title, note });
+
+const DAYS = [
+  {
+    id:"fri", date:"2026-09-04", label:"Fri", name:"Airport day",
+    kind:"board", drive:"~120 mi of SFO runs",
+    board:[
+      { t:"9:37",  title:"Dipto lands", who:["dipto"], by:["shivam"], at:"sfo",
+        note:"Shivam on pickup. Domestic arrivals — give it 25 min past landing for bags." },
+      { t:"—",     title:"Open slot", note:"YT office, or kill time somewhere with wifi. Last reliable internet before Sunday night." },
+      { t:"15:49", title:"Nachiket lands", who:["nachiket"], by:["ashir","kshitiz"], at:"sfo",
+        note:"Ashir / Kshitiz on pickup." },
+      { t:"—",     title:"Open slot", note:"Flight-watching park by SFO, work from a Starbucks. Bay Area 101 traffic is worst 16:00–19:00 — you are parked in it either way." },
+      { t:"20:00", title:"Sadrishya, Jovina & Shreyas land", who:["sadrishya","jovina","shreyas"], at:"sfo",
+        note:"Three arrivals at once — one car won't do it if everyone has checked bags." },
+      { t:"20:00", title:"Fuel all three cars", at:"costco",
+        note:"Costco closes 22:00 Friday. Fill every tank tonight — tomorrow's first stop is 6 hours away.", flag:"warn" },
+      { t:"22:30", title:"Pack the cars, then sleep", note:"Load tonight, not at 04:40. Tomorrow starts at 05:00 and it is the longest day of the trip." },
+    ],
+  },
+  {
+    id:"sat", date:"2026-09-05", label:"Sat", name:"The long crossing",
+    kind:"chain", start:"5:00", drive:"~400 mi",
+    variants:{
+      c:{ name:"Tenaya + Olmsted, Glacier Point sunset", tag:"Recommended",
+        blurb:"Uses the Tioga crossing for what it's good at — Tenaya and Olmsted are right on the road — and still puts you at Glacier Point for sunset. Trades away Tuolumne Grove, which you can do far more easily from the Airbnb side.",
+        steps:[
+          D(375,"monolake","Sonora Pass (CA-108). Six and a quarter hours if you keep stops short. Two real breaks: Oakdale and Sonora."),
+          S(60,"monolake","Mono Lake — South Tufa","$3/person, cash in the envelope at the trailhead. Flat 1-mile loop. 2.5× saltier than the ocean — you cannot sink."),
+          D(15,"leevining","Down into Lee Vining."),
+          S(45,"leevining","Fuel + lunch at the Tioga Gas Mart","LAST FUEL BEFORE YOSEMITE. Whoa Nellie Deli is inside — genuinely the best food of the trip. Open 6:30–21:00.", ),
+          D(20,"tiogapass","Highway 120 climbs 3,000 ft in 12 miles to the gate."),
+          S(15,"tiogapass","Entrance station","$35/vehicle, good 7 days, covers Sunday too. No reservation needed in 2026."),
+          D(40,"tenaya","Over the pass, past Tuolumne Meadows."),
+          S(45,"tenaya","Tenaya Lake","Alpine lake at 8,150 ft, sand beach on the east end. The water is cold and worth it anyway."),
+          D(10,"olmsted","Ten minutes west on Tioga Road."),
+          S(25,"olmsted","Olmsted Point","Half Dome from behind — the side almost nobody photographs. Five-minute walk to the viewpoint."),
+          D(50,"craneflat","Tioga Road down to Crane Flat."),
+          S(20,"craneflat","Fuel + snacks at Crane Flat","Second-to-last gas. There is NO fuel in Yosemite Valley."),
+          D(95,"glacier","Big Oak Flat Rd → Wawona Rd → Glacier Point Rd. Slow, winding, worth it."),
+          S(145,"glacier","Glacier Point — sunset + stars","Sunset 19:20. Sentinel Dome is a 2.2-mi round trip from the trailhead if you want it. Then stay: the moon is a 37% crescent that doesn't rise until after midnight, so it is properly dark."),
+          D(150,"airbnb","Glacier Point Rd → Wawona → South Entrance → Coarsegold."),
+        ]},
+      a:{ name:"As written — Tuolumne Grove + Glacier Point", tag:"Your original",
+        blurb:"This does fit, but only if the 3-hour open slot stays empty. Tenaya and Olmsted become drive-bys.",
+        steps:[
+          D(375,"monolake","Sonora Pass (CA-108)."),
+          S(60,"monolake","Mono Lake — South Tufa","$3/person. Flat 1-mile loop."),
+          D(15,"leevining","Down into Lee Vining."),
+          S(45,"leevining","Fuel + lunch at the Tioga Gas Mart","LAST FUEL BEFORE YOSEMITE."),
+          D(20,"tiogapass","Highway 120 to the gate."),
+          S(15,"tiogapass","Entrance station","$35/vehicle, good 7 days."),
+          D(100,"tuolgrove","The full Tioga Road crossing — 39 miles, and slower than it looks."),
+          S(90,"tuolgrove","Tuolumne Grove of Giant Sequoias","2.5 mi round trip, 400 ft down on the way in — which means 400 ft up on the way out, at 6,200 ft."),
+          D(95,"glacier","Down Big Oak Flat Rd, then up Glacier Point Rd."),
+          S(150,"glacier","Glacier Point — sunset + stars","Sunset 19:20."),
+          D(150,"airbnb","Back down to Coarsegold."),
+        ]},
+      b:{ name:"Indian Rock + Olmsted sunset", tag:"Costs you the most",
+        blurb:"The version where the open slot gets used. Indian Rock is Yosemite's only natural arch and it is a real hike — 6 mi round trip. But finishing the day at Olmsted puts you 3h20m from the Airbnb in the dark, so you get home LATER than either plan above.",
+        steps:[
+          D(375,"monolake","Sonora Pass (CA-108)."),
+          S(60,"monolake","Mono Lake — South Tufa","$3/person."),
+          D(15,"leevining","Down into Lee Vining."),
+          S(45,"leevining","Fuel + lunch at the Tioga Gas Mart","LAST FUEL BEFORE YOSEMITE."),
+          D(20,"tiogapass","Highway 120 to the gate."),
+          S(15,"tiogapass","Entrance station","$35/vehicle."),
+          D(25,"porcupine","Over the pass to Porcupine Creek trailhead."),
+          S(210,"indianrock","Indian Rock arch","6 mi round trip, ~1,000 ft of gain at 8,000+ ft. The only natural arch in Yosemite. Budget 3.5 hrs with nine people."),
+          D(15,"olmsted","Back west on Tioga Road."),
+          S(150,"olmsted","Olmsted Point — sunset + stars","Sunset 19:20. Big open granite, no crowds after dark."),
+          D(200,"airbnb","The long way home: Tioga Rd → Crane Flat → Wawona → Coarsegold."),
+        ]},
+    },
+  },
+  {
+    id:"sun", date:"2026-09-06", label:"Sun", name:"Valley day",
+    kind:"chain", start:"4:15", drive:"~225 mi",
+    variants:{
+      a:{ name:"Sunrise + Mist Trail + Valley floor", tag:"Recommended",
+        blurb:"A full day that still gets you back for the hot tub in daylight. Assumes you did Tenaya on Saturday — it is a 5-hour round-trip detour from the Valley and only 40 minutes off the Tioga route.",
+        steps:[
+          D(115,"tunnelview","Coarsegold → Oakhurst → South Entrance → Wawona → Tunnel View. Dark, deer on the road, no traffic."),
+          S(45,"tunnelview","Tunnel View at sunrise","Sunrise 6:33 — be there by 6:15 for the glow before it. The old walkway inside the tunnel's east portal opens onto a quieter view; walk it single file, facing traffic."),
+          D(25,"curry","Down into the Valley."),
+          S(25,"curry","Park once and don't move the car","Trailhead lot is closest to Happy Isles; Curry Village is a mile out. Both are full by 08:30 on a holiday Sunday. This is the single most time-critical moment of the trip.", ),
+          S(330,"happyisles","Mist Trail to Nevada Fall","6.6 mi round trip, 2,200 ft. Vernal Fall top is 1.7 mi / 1,100 ft if the group wants to split. September means low water — the granite staircase will be dry, not slick, and you will NOT get misted. Bring 2L each; it is exposed."),
+          S(60,"curry","Lunch — Curry Village pizza deck","You have earned it. Expect a queue."),
+          S(120,"village","Valley floor","Sentinel Bridge for the Half Dome reflection, El Capitan Meadow to spot climbers, Cook's Meadow loop. Bike rental at Curry or the Lodge if legs allow."),
+          D(150,"airbnb","Valley → Wawona → South Entrance → Coarsegold."),
+        ]},
+      b:{ name:"…plus Tenaya Lake", tag:"Your original",
+        blurb:"Only makes sense if Saturday skipped Tenaya. From the Valley it is 90 minutes up and 3h20m home from there — you would be back around 21:35 on the day you planned to party.",
+        steps:[
+          D(115,"tunnelview","Coarsegold → Tunnel View."),
+          S(45,"tunnelview","Tunnel View at sunrise","Sunrise 6:33."),
+          D(25,"curry","Down into the Valley."),
+          S(25,"curry","Park once and don't move the car","Full by 08:30 on a holiday."),
+          S(330,"happyisles","Mist Trail to Nevada Fall","6.6 mi round trip, 2,200 ft."),
+          S(60,"curry","Lunch — Curry Village pizza deck"),
+          S(90,"village","Valley floor","Trimmed to fit Tenaya in."),
+          D(90,"tenaya","Back up Big Oak Flat Rd and east on Tioga Road."),
+          S(60,"tenaya","Tenaya Lake picnic","Beautiful. Also 3h20m from your bed."),
+          D(200,"airbnb","The long way home in the dark."),
+        ]},
+      c:{ name:"…plus Glacier Point sunset", tag:"If Saturday skipped it",
+        blurb:"The catch-up option. Glacier Point is only an hour from the Valley and roughly on the way home, so it costs far less than Tenaya does.",
+        steps:[
+          D(115,"tunnelview","Coarsegold → Tunnel View."),
+          S(45,"tunnelview","Tunnel View at sunrise","Sunrise 6:33."),
+          D(25,"curry","Down into the Valley."),
+          S(25,"curry","Park once and don't move the car"),
+          S(330,"happyisles","Mist Trail to Nevada Fall","6.6 mi round trip, 2,200 ft."),
+          S(60,"curry","Lunch — Curry Village pizza deck"),
+          S(90,"village","Valley floor"),
+          D(60,"glacier","Up Glacier Point Road."),
+          S(165,"glacier","Glacier Point — sunset + stars","Sunset 19:18. Half Dome straight ahead, Nevada Fall below — including the trail you climbed this morning."),
+          D(150,"airbnb","Down to Coarsegold."),
+        ]},
+    },
+  },
+  {
+    id:"mon", date:"2026-09-07", label:"Mon", name:"Railroad & home",
+    kind:"chain", start:"11:00", drive:"~300 mi", split:true,
+    variants:{
+      a:{ name:"Railroad, then split for home", tag:"The only version that works",
+        blurb:"Two cars leave Fish Camp going different places. The airport car cannot also do the Palo Alto hot tub — see the split below.",
+        steps:[
+          S(20,"airbnb","Checkout sweep","Chargers, the fridge, the one shoe under the couch. “Leave with deeper friendships.” — Kshitiz"),
+          D(20,"oakhurst","Down Highway 41."),
+          S(40,"oakhurst","Brunch in Oakhurst","Last real town. Sit-down places fill on Labor Day — 40 minutes is the honest budget for nine people."),
+          D(25,"railroad","Up to Fish Camp, 4 miles south of the South Entrance."),
+          S(90,"railroad","Sugar Pine Railroad","Book this now — Labor Day Monday. Steam train 13:00, one hour, 4-mile round trip through old logging grades. Be there 12:45."),
+          D(270,"sfo","Fish Camp → 41 → 99 → 152 → 101. The airport car goes direct, no stops."),
+        ]},
+    },
+  },
+  {
+    id:"tue", date:"2026-09-08", label:"Tue", name:"Last flights",
+    kind:"board", drive:"~75 mi",
+    board:[
+      { t:"4:00", title:"Leave for SFO", note:"Two 06:00 departures means leaving around 04:00. Somebody is doing this drive on three hours of sleep — decide who tonight, not at 03:45." },
+      { t:"6:00", title:"Dipto departs", who:["dipto"], at:"sfo" },
+      { t:"6:00", title:"Nachiket departs", who:["nachiket"], at:"sfo" },
+    ],
+  },
+];
+
+/* ---------------------------------------------------------------------
+   CROWD MODEL. Hours 05:00–21:00. Levels 1 easy · 2 busy · 3 packed ·
+   4 turned away. Modelled from reported holiday-weekend patterns — this
+   is an estimate, not a live feed, and the app says so on screen.
+   --------------------------------------------------------------------- */
+const CROWD_H0 = 5, CROWD_H1 = 21;
+const CROWDS = [
+  { nm:"Valley parking — Curry & Trailhead", key:"curry",
+    lv:[1,1,1,2,3,4,4,4,4,4,3,3,2,2,1,1,1],
+    tip:"Full by 08:30 on a holiday Sunday. There is no second chance — park once and use the shuttle." },
+  { nm:"Tunnel View", key:"tunnelview",
+    lv:[1,2,2,2,3,3,3,3,3,3,3,3,3,4,4,2,1],
+    tip:"Sunrise crowd is small and polite. Sunset is a scrum with tour buses." },
+  { nm:"Mist Trail", key:"happyisles",
+    lv:[1,1,1,2,3,4,4,4,3,3,2,2,1,1,1,1,1],
+    tip:"On the trail by 07:45 and you climb the staircase before the wall of people forms." },
+  { nm:"Glacier Point", key:"glacier",
+    lv:[1,1,1,2,2,3,3,3,3,3,3,3,3,4,4,2,1],
+    tip:"Lot fills mid-afternoon. Arriving ~18:30 for sunset, expect to park along the road and walk." },
+  { nm:"Tioga Road — Tenaya & Olmsted", key:"tenaya",
+    lv:[1,1,1,1,2,2,3,3,3,3,3,2,2,1,1,1,1],
+    tip:"The quietest major corridor in the park. Turnouts, not lots — you can almost always squeeze in." },
+  { nm:"Mono Lake South Tufa", key:"monolake",
+    lv:[1,2,2,2,2,2,2,2,2,2,2,2,2,2,3,2,1],
+    tip:"Never really packed. Your 11:15 arrival is fine." },
+  { nm:"South Entrance gate line", key:"southent",
+    lv:[1,1,1,2,3,4,4,3,3,2,2,2,2,1,1,1,1],
+    tip:"Through the gate before 08:00 or after 16:00. 10:00–12:00 can be a 45-minute crawl." },
+  { nm:"Tioga Pass entrance gate", key:"tiogapass",
+    lv:[1,1,1,1,2,2,2,2,2,2,2,2,1,1,1,1,1],
+    tip:"The east gate is the calmest way into Yosemite. Your Saturday arrival lands well." },
+];
+
+/* ---------------------------------------------------------------------
+   ACTIVITIES — nothing preselected. Vote in the app.
+   --------------------------------------------------------------------- */
+const ACTS = [
+  { id:"mist-nevada", nm:"Mist Trail → Nevada Fall", key:"happyisles", zone:"Valley",
+    dist:"6.6 mi RT", gain:"2,200 ft", time:"5–6 hrs", hard:"Hard",
+    note:"The signature Yosemite hike. 600+ granite steps past Vernal Fall, then switchbacks to the top of Nevada. In September the falls are a trickle — which means dry footing and no spray, but far less drama than the photos." },
+  { id:"mist-vernal", nm:"Vernal Fall footbridge / top", key:"vernal", zone:"Valley",
+    dist:"1.6–3.4 mi RT", gain:"400–1,100 ft", time:"1.5–3 hrs", hard:"Moderate",
+    note:"The natural bail-out point. Footbridge at 0.8 mi is easy; the top of Vernal is where the staircase bites. A good split point for a group of nine." },
+  { id:"tunnel", nm:"Tunnel View at sunrise", key:"tunnelview", zone:"Valley",
+    dist:"Roadside", gain:"—", time:"30–45 min", hard:"Easy",
+    note:"El Capitan, Bridalveil and Half Dome in one frame. Face east — the light lands on the far wall first. The walkway inside the tunnel's east portal is the quiet version." },
+  { id:"valleyfloor", nm:"Valley floor — bridges & meadows", key:"sentinelbr", zone:"Valley",
+    dist:"Flat, pick your length", gain:"—", time:"1–3 hrs", hard:"Easy",
+    note:"Sentinel Bridge for Half Dome reflected in the Merced, El Capitan Meadow to watch climbers through binoculars, Cook's Meadow loop. Rent bikes at Curry or the Lodge." },
+  { id:"glacierpt", nm:"Glacier Point at sunset", key:"glacier", zone:"Glacier Point Rd",
+    dist:"5-min walk", gain:"—", time:"1–3 hrs", hard:"Easy",
+    note:"3,200 ft straight down to the Valley floor, Half Dome eye-level, Vernal and Nevada Falls below. Stay past dark on Saturday — 37% crescent moon, no moonlight until after midnight." },
+  { id:"sentineldome", nm:"Sentinel Dome", key:"sentinel", zone:"Glacier Point Rd",
+    dist:"2.2 mi RT", gain:"400 ft", time:"1–1.5 hrs", hard:"Easy–moderate",
+    note:"360° summit — the only place you see the whole park at once. Easier than it looks and the best effort-to-payoff ratio in Yosemite." },
+  { id:"taftpoint", nm:"Taft Point & the Fissures", key:"taft", zone:"Glacier Point Rd",
+    dist:"2.2 mi RT", gain:"250 ft", time:"1–1.5 hrs", hard:"Easy",
+    note:"Unrailed cliff edge and deep granite splits you can look straight down. Same trailhead as Sentinel Dome. Not for anyone shaky about heights." },
+  { id:"tenaya", nm:"Tenaya Lake", key:"tenaya", zone:"Tioga Road",
+    dist:"Roadside / 2.5 mi loop", gain:"—", time:"45 min–2 hrs", hard:"Easy",
+    note:"8,150 ft alpine lake with a real sand beach on the east end. Cold, clear, and the best swim of the trip. Directly on Saturday's route." },
+  { id:"olmsted", nm:"Olmsted Point", key:"olmsted", zone:"Tioga Road",
+    dist:"0.5 mi RT", gain:"—", time:"20–30 min", hard:"Easy",
+    note:"Half Dome from the back, Clouds Rest above, Tenaya Canyon below. Glacial erratics scattered across bare granite. Ten minutes from Tenaya Lake." },
+  { id:"indianrock", nm:"Indian Rock arch", key:"indianrock", zone:"Tioga Road",
+    dist:"6 mi RT", gain:"~1,000 ft", time:"3.5–4 hrs", hard:"Hard",
+    note:"The only natural arch in Yosemite, 15 ft of granite you can climb through. Real hike at 8,000+ ft from Porcupine Creek trailhead — this is what eats Saturday's open slot." },
+  { id:"tuolgrove", nm:"Tuolumne Grove sequoias", key:"tuolgrove", zone:"Crane Flat",
+    dist:"2.5 mi RT", gain:"400 ft (down first)", time:"1.5–2 hrs", hard:"Moderate",
+    note:"About two dozen giant sequoias including a tunnel tree you can walk through. Downhill in, uphill out at 6,200 ft — the return is the work." },
+  { id:"mariposa", nm:"Mariposa Grove sequoias", key:"mariposa", zone:"South Entrance",
+    dist:"2–7 mi options", gain:"varies", time:"2–4 hrs", hard:"Easy–moderate",
+    note:"Far bigger than Tuolumne Grove — 500+ mature sequoias including the Grizzly Giant. And it is 45 min from the Airbnb, right by the railroad. The easy Monday-morning swap if Saturday runs out of road." },
+  { id:"monolake", nm:"Mono Lake South Tufa", key:"monolake", zone:"Eastern Sierra",
+    dist:"1 mi loop", gain:"flat", time:"45–60 min", hard:"Easy",
+    note:"Limestone towers standing in a lake 2.5× saltier than the ocean. You genuinely cannot sink. $3/person in an envelope at the trailhead." },
+  { id:"railroad", nm:"Sugar Pine Railroad", key:"railroad", zone:"Fish Camp",
+    dist:"4 mi by train", gain:"—", time:"1 hr", hard:"Sit down",
+    note:"1913 Shay steam locomotive on old logging grade. Book ahead for Labor Day. Monday 13:00 — be there 12:45." },
+];
+
+/* ---------------------------------------------------------------------
+   FUEL — the thing most likely to actually ruin a day.
+   --------------------------------------------------------------------- */
+const FUEL = [
+  { nm:"Costco, Bay Area", key:"costco", when:"Friday 20:00", hrs:"Closes 22:00 Fri",
+    why:"Fill all three cars. Cheapest fuel you will see all trip.", tone:"ok" },
+  { nm:"Oakdale / Sonora", key:null, when:"Saturday ~07:30", hrs:"24h options on CA-108",
+    why:"Top up before Sonora Pass. After Sonora there is essentially nothing for 100 miles.", tone:"warn" },
+  { nm:"Tioga Gas Mart, Lee Vining", key:"leevining", when:"Saturday 12:30", hrs:"6:30–21:00",
+    why:"LAST FUEL BEFORE YOSEMITE. Do not skip this to save 20 minutes. Whoa Nellie Deli is inside.", tone:"bad" },
+  { nm:"Crane Flat", key:"craneflat", when:"Saturday ~16:40", hrs:"24h pumps (card)",
+    why:"Last fuel inside the park on the Tioga side. There is NO gas in Yosemite Valley.", tone:"warn" },
+  { nm:"Wawona", key:"wawona", when:"Sunday, either direction", hrs:"24h pumps (card)",
+    why:"The in-park option on the Highway 41 side. Between the Valley and the South Entrance.", tone:"ok" },
+  { nm:"Valero, Coarsegold", key:"valero", when:"Evenings", hrs:"Closes 22:00",
+    why:"Nearest to the Airbnb — but you are arriving after 23:00 on Saturday, so it will be shut.", tone:"warn" },
+  { nm:"Chukchansi", key:"chukchansi", when:"Any hour", hrs:"24/7",
+    why:"Open all night, with food. Your fallback for both late arrivals.", tone:"ok" },
+];
+
+/* ---------------------------------------------------------------------
+   LIVE LINKS. The page cannot fetch these itself — artifacts are
+   sandboxed against outside network calls — so these open in a browser.
+   --------------------------------------------------------------------- */
+const LIVE = [
+  { nm:"Yosemite road & conditions", url:"https://www.nps.gov/yose/planyourvisit/conditions.htm", note:"The official source. Check Friday night and Sunday morning." },
+  { nm:"Caltrans QuickMap", url:"https://quickmap.dot.ca.gov/", note:"Live closures and chain controls on 41, 120, 140 and 108." },
+  { nm:"Yosemite webcams", url:"https://www.nps.gov/yose/learn/photosmultimedia/webcams.htm", note:"Look at Turtleback Dome before you commit to a sunrise drive." },
+  { nm:"Air quality — AirNow", url:"https://www.airnow.gov/?city=Yosemite%20Valley&state=CA", note:"Fire restrictions are on park-wide. Check before the Mist Trail." },
+  { nm:"Active fires — Watch Duty", url:"https://app.watchduty.org/", note:"Faster than official channels when something starts." },
+  { nm:"Sugar Pine Railroad tickets", url:"https://www.ymsprr.com/", note:"Monday 13:00. Book before the weekend." },
+];
+
+const PACK_SEED = [
+  { id:"p1",  nm:"Headlamps",              mt:"Saturday ends after dark at Glacier Point" },
+  { id:"p2",  nm:"2L water bottle each",   mt:"Mist Trail is exposed and dry in September" },
+  { id:"p3",  nm:"Layers — it hits 50s at night", mt:"Glacier Point at 7,200 ft after sunset is cold" },
+  { id:"p4",  nm:"Cash for Mono Lake",     mt:"$3/person, envelope at the trailhead" },
+  { id:"p5",  nm:"Park pass or $35 × 3 cars", mt:"One payment per vehicle, good 7 days" },
+  { id:"p6",  nm:"Offline maps downloaded", mt:"Google Maps → profile → Offline maps → Yosemite + Mono Lake" },
+  { id:"p7",  nm:"Car chargers ×3",        mt:"Navigation will eat every phone" },
+  { id:"p8",  nm:"Breakfast for Sunday",   mt:"You leave at 4:15a — nothing is open" },
+  { id:"p9",  nm:"Sunscreen + hats",       mt:"8,000 ft sun is not the same sun" },
+  { id:"p10", nm:"Cooler + Saturday snacks", mt:"6 hours to the first real stop" },
+  { id:"p11", nm:"Swimsuit",               mt:"Tenaya Lake, and the hot tub" },
+  { id:"p12", nm:"Bear-aware: no food in the car overnight", mt:"Applies in the park, not at the Airbnb" },
+  { id:"p13", nm:"First aid + blister tape", mt:"2,200 ft of granite steps" },
+  { id:"p14", nm:"Portable battery pack",  mt:"No charging on the trail" },
+];
+
+const CARS_SEED = {
+  car1:{ nm:"Car 1", who:["shivam","dipto","simran"] },
+  car2:{ nm:"Car 2", who:["ashir","kshitiz","nachiket"] },
+  car3:{ nm:"Car 3", who:["shreyas","sadrishya","jovina"] },
+};
+
+/* =====================================================================
+   TIME
+   ===================================================================== */
+const TRIP_DATES = ["2026-09-04","2026-09-05","2026-09-06","2026-09-07","2026-09-08"];
+
+function hm(s){ const [h,m] = String(s).split(":").map(Number); return h*60 + (m||0); }
+function fmt(min){
+  min = ((Math.round(min) % 1440) + 1440) % 1440;
+  const h24 = Math.floor(min/60), m = min%60;
+  const h = h24 % 12 === 0 ? 12 : h24 % 12;
+  return h + ":" + String(m).padStart(2,"0") + (h24 < 12 ? "a" : "p");
+}
+function dur(min){
+  min = Math.round(min);
+  const h = Math.floor(min/60), m = min%60;
+  if (h && m) return h + "h " + m + "m";
+  if (h) return h + "h";
+  return m + "m";
+}
+/* Current wall time in Pacific, regardless of the device's own zone. */
+function paNow(){
+  const d = new Date();
+  const p = new Intl.DateTimeFormat("en-CA", {
+    timeZone:"America/Los_Angeles", year:"numeric", month:"2-digit", day:"2-digit",
+    hour:"2-digit", minute:"2-digit", weekday:"short", hour12:false,
+  }).formatToParts(d).reduce((a,x)=>(a[x.type]=x.value,a),{});
+  let hh = parseInt(p.hour,10); if (hh === 24) hh = 0;
+  return {
+    date: p.year + "-" + p.month + "-" + p.day,
+    min: hh*60 + parseInt(p.minute,10),
+    wd: p.weekday,
+  };
+}
+function dayIndexFor(dateStr){ return TRIP_DATES.indexOf(dateStr); }
+
+/* =====================================================================
+   THE TIME-BUDGET ENGINE
+   Walks a variant's steps from the day's start and stamps every step
+   with the clock time you actually arrive.
+   ===================================================================== */
+function runChain(day, variantKey){
+  const v = day.variants[variantKey] || day.variants[Object.keys(day.variants)[0]];
+  let t = hm(day.start);
+  const out = [];
+  for (const st of v.steps){
+    const start = t;
+    t += st.min;
+    out.push(Object.assign({}, st, { start, end:t }));
+  }
+  const sun = SUN[day.date];
+  return {
+    variant:v, key:variantKey, rows:out,
+    startMin: hm(day.start), endMin: t,
+    driveMin: v.steps.filter(s=>s.k==="drive").reduce((a,s)=>a+s.min,0),
+    stopMin:  v.steps.filter(s=>s.k==="stop").reduce((a,s)=>a+s.min,0),
+    sunset: sun ? hm(sun.set) : null,
+    sunrise: sun ? hm(sun.rise) : null,
+  };
+}
+function verdictFor(day, res){
+  const end = res.endMin, elapsed = res.endMin - res.startMin;
+  const tone = end >= 24*60 ? "bad"
+             : (end >= 23*60 || elapsed >= 16*60) ? "warn"
+             : end >= 22*60 ? "warn" : "ok";
+  let txt;
+  if (end >= 24*60)          txt = "Gets you in after midnight";
+  else if (elapsed >= 17*60) txt = dur(elapsed) + " door to door — brutal";
+  else if (end >= 23*60)     txt = "Late — bed around midnight";
+  else if (elapsed >= 15*60) txt = dur(elapsed) + " door to door";
+  else if (end >= 22*60)     txt = "Long, but survivable";
+  else                       txt = "Home at a human hour";
+  return { tone, txt };
+}
+
+/* =====================================================================
+   STATE — db when the viewer can run it, localStorage always.
+   Every feature works with neither. Nothing here throws if storage is
+   blocked (private windows, thumbnailers, locked-down browsers).
+   ===================================================================== */
+const LS = {
+  get(k, fb){ try{ const v = localStorage.getItem("not:"+k); return v ? JSON.parse(v) : fb; }catch(e){ return fb; } },
+  set(k, v){ try{ localStorage.setItem("not:"+k, JSON.stringify(v)); }catch(e){} },
+};
+
+const state = {
+  me:        LS.get("me", null),
+  plan:      LS.get("plan",    { sat:"c", sun:"a", mon:"a" }),
+  cars:      LS.get("cars",    CARS_SEED),
+  packing:   LS.get("packing", {}),        /* id -> {done:bool, by:id} */
+  votes:     LS.get("votes",   {}),        /* actId -> [crewIds] */
+  ratings:   LS.get("ratings", {}),        /* actId -> {crewId: 1-5} */
+  log:       LS.get("log",     []),        /* {id, who, text, ts, kind} */
+  checkins:  LS.get("checkins",[]),        /* {id, who, where, ts} */
+  tab:       "now",
+};
+
+let DB = null;                 /* db namespace once resolved, else null */
+let SAMPLE = null;
+let DOWNLOADS = null;
+let syncMode = "local";        /* 'local' | 'live' */
+
+const DOCS = { plan:"trip/plan", cars:"trip/cars", packing:"trip/packing", votes:"trip/votes", ratings:"trip/ratings" };
+
+function persist(kind){
+  LS.set(kind, state[kind]);
+  if (!DB || !DOCS[kind]) return;
+  DB.doc(DOCS[kind]).set({ v: state[kind] }).catch(()=>{ /* offline or denied: local copy stands */ });
+}
+
+async function initDb(){
+  try { DB = await window.claude?.use?.("db") ?? null; } catch(e){ DB = null; }
+  if (!DB){ setSync("local"); return; }
+  setSync("live");
+  for (const [kind, path] of Object.entries(DOCS)){
+    try {
+      DB.doc(path).onSnapshot(snap => {
+        if (!snap.exists) return;
+        const v = snap.data()?.v;
+        if (v === undefined) return;
+        state[kind] = v; LS.set(kind, v); render();
+      }, () => setSync("local"));
+    } catch(e){ /* bad path can't happen here, but never take the page down */ }
+  }
+  for (const coll of ["log","checkins"]){
+    try {
+      DB.collection(coll).orderBy("ts","desc").limit(200).onSnapshot(snap => {
+        state[coll] = snap.docs.map(d => Object.assign({ id:d.id }, d.data()));
+        LS.set(coll, state[coll]); render();
+      }, () => setSync("local"));
+    } catch(e){}
+  }
+}
+function addToCollection(coll, body){
+  const rec = Object.assign({ id: "x" + Date.now().toString(36) + Math.random().toString(36).slice(2,6) }, body);
+  state[coll] = [rec].concat(state[coll]).slice(0,200);
+  LS.set(coll, state[coll]);
+  render();
+  if (DB){ DB.collection(coll).doc(rec.id).set(body).catch(()=>{}); }
+}
+function setSync(m){ syncMode = m; const el = document.getElementById("syncBanner"); if (el) paintSync(el); }
+
+/* =====================================================================
+   DOM helpers
+   ===================================================================== */
+function el(tag, attrs, kids){
+  const n = document.createElement(tag);
+  if (attrs) for (const [k,v] of Object.entries(attrs)){
+    if (v === null || v === undefined || v === false) continue;
+    if (k === "class") n.className = v;
+    else if (k === "html") n.innerHTML = v;
+    else if (k === "text") n.textContent = v;
+    else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+    else n.setAttribute(k, v === true ? "" : String(v));
+  }
+  if (kids) for (const k of [].concat(kids)){
+    if (k === null || k === undefined || k === false) continue;
+    n.append(k instanceof Node ? k : document.createTextNode(String(k)));
+  }
+  return n;
+}
+const card    = kids => el("div", { class:"card" }, kids);
+const cardPad = (kids, cls) => el("div", { class:"card-pad " + (cls||"") }, kids);
+function head(title, pinText){
+  return el("div", { class:"card-head" }, [
+    el("h2", { text:title }),
+    pinText ? el("span", { class:"eyebrow pin", text:pinText }) : null,
+  ]);
+}
+function avatar(id, big){
+  const c = byId(id);
+  if (!c) return null;
+  return el("span", { class:"av" + (big ? " lg" : ""), style:"background:" + c.color, title:c.name, text:c.short });
+}
+function mapsBtn(key, label){
+  if (!key || !PLACES[key]) return null;
+  return el("a", { class:"btn sm", href:mapsUrl(key), target:"_blank", rel:"noopener",
+    text:(label || "Navigate") }, null);
+}
+function pill(cls, txt){ return el("span", { class:"pill " + cls, text:txt }); }
+function flag(tone, strongTxt, rest){
+  return el("div", { class:"flag " + tone }, [
+    el("span", { class:"ic", text:tone === "bad" ? "!" : tone === "warn" ? "!" : "i" }),
+    el("div", {}, [ strongTxt ? el("strong", { text:strongTxt + " " }) : null, rest ]),
+  ]);
+}
+
+function paint(node, kids){
+  node.replaceChildren.apply(node, kids.filter(k => k !== null && k !== undefined && k !== false));
+}
+
+/* =====================================================================
+   ASK — a question box wired to Claude, on the viewer's own account.
+   Hidden entirely when the capability isn't available or is declined.
+   ===================================================================== */
+const askState = { q:"", a:"", busy:false, err:"" };
+let askCtl = null;
+
+function askContext(){
+  const bits = ["You are a trip assistant for nine friends visiting Yosemite over Labor Day weekend 2026 (Fri 4 – Mon 7 September).",
+    "Answer only from the trip facts below plus general Yosemite knowledge. Be concrete and brief — five sentences at most. If you do not know, say so and name who to call.",
+    "", "TRIP FACTS:",
+    "- Nine people, three cars, based at an Airbnb in Coarsegold (about 2 hours from Yosemite Valley, 1 hour from the South Entrance).",
+    "- Saturday: leave the Bay Area 5:00a, Sonora Pass (CA-108) to Mono Lake ~11:15a, fuel and lunch at Lee Vining (LAST FUEL before the park), enter at Tioga Pass ~1:35p, then Tenaya Lake and Olmsted Point, Glacier Point for the 7:20p sunset, back to Coarsegold ~11:30p.",
+    "- Sunday: leave 4:15a, Tunnel View for the 6:33a sunrise, park at Curry Village by 7:20a, Mist Trail to Nevada Fall (6.6 mi, 2,200 ft), Valley floor, back ~6:45p.",
+    "- Monday: checkout 11:00a, brunch in Oakhurst, Sugar Pine Railroad at Fish Camp 1:00p, then split — one car straight to SFO for a 9:30p flight, the rest to Palo Alto.",
+    "- No entrance reservations are required in Yosemite in 2026. Entry is $35 per vehicle, good 7 days.",
+    "- There is NO fuel in Yosemite Valley. Fuel is at Lee Vining, Crane Flat and Wawona.",
+    "- Cell service is unreliable outside eastern Yosemite Valley. Tioga Road and Glacier Point have essentially none.",
+    "- Park-wide fire restrictions are in effect below 8,000 ft and smoke is possible.",
+    "- In September the waterfalls run low; the Mist Trail will be dry.",
+  ];
+  return bits.join("\n");
+}
+function askCard(){
+  if (!SAMPLE) return null;
+  const out = el("div",{ class:"hint", style:"white-space:pre-wrap;min-height:20px",
+    text: askState.busy && !askState.a ? "Thinking…" : (askState.err || askState.a) });
+  const box = el("input",{ type:"text", value:askState.q,
+    placeholder:"What if it's smoky? Where do we eat near Curry?",
+    oninput:(e)=>{ askState.q = e.target.value; } });
+  const ask = el("button",{ class:"btn go", text: askState.busy ? "Asking…" : "Ask",
+    disabled: askState.busy || null, onclick:runAsk });
+  const stop = el("button",{ class:"btn", text:"Stop", onclick:()=>askCtl && askCtl.abort() });
+  box.addEventListener("keydown", e => { if (e.key === "Enter" && !askState.busy) runAsk(); });
+  return card([
+    head("Ask about the trip", "uses your Claude account"),
+    el("div",{ class:"card-pad", style:"padding-top:9px;display:flex;flex-direction:column;gap:8px" },[
+      box,
+      el("div",{class:"btnrow"},[ ask, askState.busy ? stop : null ]),
+      (askState.a || askState.err || askState.busy) ? out : null,
+      el("div",{class:"tiny muted",text:"Needs signal. It doesn't know today's road or fire status — check the links on the Drive tab for that."}),
+    ]),
+  ]);
+}
+async function runAsk(){
+  const q = (askState.q || "").trim();
+  if (!q || askState.busy || !SAMPLE) return;
+  askState.busy = true; askState.a = ""; askState.err = "";
+  askCtl = new AbortController();
+  render();
+  try {
+    const res = await SAMPLE(askContext() + "\n\nQuestion: " + q, {
+      signal: askCtl.signal,
+      onText: ({ text }) => { askState.a = text; render(); },
+    });
+    askState.a = res.text;
+  } catch(e){
+    const c = e && e.code;
+    askState.a = (e && e.text) || "";
+    if (c === "cancelled")           askState.err = askState.a ? "" : "Stopped.";
+    else if (c === "not_granted")  { SAMPLE = null; }
+    else if (c === "rate_limited")   askState.err = "Too many questions at once — wait a moment.";
+    else                             askState.err = "Couldn't reach Claude. You're probably offline.";
+  } finally {
+    askState.busy = false; askCtl = null; render();
+  }
+}
+
+/* =====================================================================
+   THE DAY RIBBON — 4am to midnight, drives thin, stops tall, now-needle
+   ===================================================================== */
+const RIB_A = 240, RIB_B = 1440, RIB_SPAN = RIB_B - RIB_A;
+const ribX = m => Math.max(0, Math.min(1000, (m - RIB_A) / RIB_SPAN * 1000));
+
+function ribbon(day, res, nowMin){
+  const sun = SUN[day.date] || {};
+  const rise = sun.rise ? hm(sun.rise) : null;
+  const set  = sun.set  ? hm(sun.set)  : null;
+  const parts = [];
+  parts.push('<rect x="0" y="0" width="1000" height="64" fill="var(--sunk)"/>');
+  if (rise !== null && set !== null){
+    parts.push('<rect x="' + ribX(rise).toFixed(1) + '" y="0" width="' +
+      (ribX(set) - ribX(rise)).toFixed(1) + '" height="64" fill="var(--surface-2)"/>');
+  }
+  if (res){
+    for (const r of res.rows){
+      const x = ribX(r.start), w = Math.max(1.5, ribX(Math.min(r.end, RIB_B)) - x);
+      if (r.k === "drive"){
+        parts.push('<rect x="' + x.toFixed(1) + '" y="27" width="' + w.toFixed(1) +
+          '" height="10" rx="3" fill="var(--ink-3)" opacity="0.55"/>');
+      } else {
+        parts.push('<rect x="' + x.toFixed(1) + '" y="13" width="' + w.toFixed(1) +
+          '" height="38" rx="4" fill="var(--accent)"/>');
+      }
+    }
+  }
+  if (rise !== null) parts.push('<rect x="' + (ribX(rise)-0.8).toFixed(1) + '" y="0" width="1.6" height="64" fill="var(--warn)"/>');
+  if (set  !== null) parts.push('<rect x="' + (ribX(set)-0.8).toFixed(1)  + '" y="0" width="1.6" height="64" fill="var(--warn)"/>');
+  if (nowMin !== null && nowMin >= RIB_A && nowMin <= RIB_B){
+    parts.push('<rect x="' + (ribX(nowMin)-1.2).toFixed(1) + '" y="0" width="2.4" height="64" fill="var(--ink)"/>');
+  }
+  const svg = '<svg viewBox="0 0 1000 64" preserveAspectRatio="none" aria-hidden="true">' + parts.join("") + '</svg>';
+  return el("div", { class:"ribbon-wrap" }, [
+    el("div", { class:"ribbon", html:svg }),
+    el("div", { class:"hours", style:"margin-top:5px" }, ["4a","8a","12p","4p","8p","12a"].map(h => el("span",{text:h}))),
+    el("div", { class:"ribbon-legend" }, [
+      el("span",{class:"lg"},[el("i",{style:"background:var(--accent)"}),"Stops"]),
+      el("span",{class:"lg"},[el("i",{style:"background:var(--ink-3);opacity:.55"}),"Driving"]),
+      el("span",{class:"lg"},[el("i",{style:"background:var(--warn)"}),"Sunrise / sunset"]),
+    ]),
+  ]);
+}
+
+/* =====================================================================
+   NOW
+   ===================================================================== */
+function paintSync(node){
+  node.className = "sync " + syncMode;
+  node.replaceChildren(
+    el("span",{class:"dot"}),
+    el("span",{ html: syncMode === "live"
+      ? "<strong>Shared.</strong> Everyone with the link sees your edits."
+      : "<strong>This phone only.</strong> Your edits are saved here but not shared — use Copy plan to paste into the group chat." })
+  );
+}
+
+function currentDay(now){
+  const i = dayIndexFor(now.date);
+  return i >= 0 ? DAYS[i] : null;
+}
+
+function renderNow(){
+  const p = document.getElementById("p-now");
+  const now = paNow();
+  const day = currentDay(now);
+  const kids = [];
+
+  const sb = el("div", { id:"syncBanner" }); paintSync(sb); kids.push(sb);
+
+  if (!state.me) kids.push(whoAreYouCard());
+
+  if (!day){
+    const first = new Date("2026-09-04T09:37:00-07:00").getTime();
+    const days = Math.max(0, Math.ceil((first - Date.now()) / 86400000));
+    kids.push(card([
+      el("div",{class:"hero-top"},[
+        el("div",{class:"hero-label"},[ pill("accent","Not there yet") ]),
+        el("div",{class:"what",text: days > 0 ? days + (days===1?" day to go":" days to go") : "Trip's done"}),
+        el("div",{class:"where",text: days > 0
+          ? "Friday 4 September — Dipto lands at SFO at 9:37a and it starts."
+          : "Everything below is still here. Head to the Log tab."}),
+      ]),
+      el("div",{class:"sunstrip"},[
+        sunCell("First alarm","5:00a"), sunCell("Longest day","Sat · 400 mi"), sunCell("Total","~1,000 mi"),
+      ]),
+    ]));
+    kids.push(readyCard());
+    paint(p, kids);
+    return;
+  }
+
+  /* what is happening right now */
+  let hero, count = null;
+  if (day.kind === "chain"){
+    const res = runChain(day, state.plan[day.id]);
+    let cur = null, next = null;
+    for (const r of res.rows){
+      if (now.min >= r.start && now.min < r.end){ cur = r; }
+      if (r.start > now.min && !next){ next = r; }
+    }
+    if (now.min < res.startMin){
+      const mins = res.startMin - now.min;
+      hero = heroCard("Not moving yet", "Leaving at " + fmt(res.startMin), day.name, mins < 90);
+      count = countdownRow(mins, "until you leave — " + (res.rows[0] ? PLACES[res.rows[0].to]?.name || "first leg" : ""));
+    } else if (cur){
+      const rest = cur.end - now.min;
+      const label = cur.k === "drive"
+        ? "Driving to " + (PLACES[cur.to]?.name || "next stop")
+        : cur.title;
+      hero = heroCard(cur.k === "drive" ? "On the road" : "Right now", label,
+        cur.note || "", false);
+      count = countdownRow(rest, cur.k === "drive"
+        ? "left on this leg · arrive " + fmt(cur.end)
+        : "left here if you're keeping to plan");
+    } else if (next){
+      hero = heroCard("Next up", next.k === "drive"
+        ? "Drive to " + (PLACES[next.to]?.name || "next stop") : next.title, next.note || "", true);
+      count = countdownRow(next.start - now.min, "until " + fmt(next.start));
+    } else {
+      hero = heroCard("Day's done", "Get some sleep", 
+        day.id === "sat" ? "Tomorrow starts at 4:15a. That is not a joke." : "", false);
+    }
+    kids.push(hero);
+    if (count) kids.push(count);
+    kids.push(sunCard(day));
+    kids.push(card([ head("Today at a glance", day.variants[state.plan[day.id]]?.name || ""), ribbon(day, res, now.min) ]));
+    kids.push(verdictCard(day, res));
+  } else {
+    const upcoming = day.board.filter(b => b.t !== "—" && hm(b.t) > now.min);
+    const nxt = upcoming[0];
+    hero = nxt
+      ? heroCard("Next up", nxt.title, nxt.note || "", (hm(nxt.t) - now.min) < 60)
+      : heroCard("Nothing scheduled", day.name, "Board's clear for the rest of today.", false);
+    kids.push(hero);
+    if (nxt) kids.push(countdownRow(hm(nxt.t) - now.min, "until " + fmt(hm(nxt.t))));
+    kids.push(sunCard(day));
+    kids.push(card([ head(day.label + " — the board"), boardRows(day, now) ]));
+  }
+
+  const ask = askCard(); if (ask) kids.push(ask);
+  kids.push(quickJump());
+  paint(p, kids);
+}
+
+function heroCard(eyebrowTxt, what, where, urgent){
+  return el("div", { class:"hero" }, [
+    el("div",{class:"hero-top"},[
+      el("div",{class:"hero-label"},[ pill(urgent ? "accent" : "plain", eyebrowTxt) ]),
+      el("div",{class:"what",text:what}),
+      where ? el("div",{class:"where",text:where}) : null,
+    ]),
+  ]);
+}
+function countdownRow(mins, label){
+  return el("div", { class:"countdown" + (mins <= 45 ? " urgent" : "") }, [
+    el("span",{class:"big mono",text:dur(Math.max(0,mins))}),
+    el("span",{class:"lbl",text:label}),
+  ]);
+}
+function sunCell(k,v){ return el("div",{},[ el("div",{class:"k",text:k}), el("div",{class:"v",text:v}) ]); }
+function sunCard(day){
+  const s = SUN[day.date] || {}, w = WEATHER[day.date] || {};
+  return el("div",{class:"card"},[
+    el("div",{class:"sunstrip"},[
+      sunCell("Sunrise", s.rise ? fmt(hm(s.rise)) : "—"),
+      sunCell("Sunset",  s.set  ? fmt(hm(s.set))  : "—"),
+      sunCell("Dark",    s.darkFrom ? fmt(hm(s.darkFrom)) : "—"),
+      sunCell("Hi / lo", w.hi ? w.hi + "/" + w.lo + "°" : "—"),
+    ]),
+    w.s ? el("div",{class:"card-pad hint sm",style:"padding-top:9px;padding-bottom:11px",text:w.s + " · forecast made before the trip — check the sky."}) : null,
+  ]);
+}
+
+function whoAreYouCard(){
+  return card([
+    head("Who's holding this phone?"),
+    el("div",{class:"card-pad hint",style:"padding-top:6px",text:"So your check-ins, votes and log entries have your name on them. Stored on this device only."}),
+    el("div",{class:"card-pad",style:"padding-top:0;display:flex;flex-wrap:wrap;gap:8px"},
+      CREW.map(c => el("button",{ class:"btn", onclick:()=>{ state.me = c.id; LS.set("me", c.id); render(); } },
+        [ avatar(c.id), c.name ]))),
+  ]);
+}
+function readyCard(){
+  return card([
+    head("Before you leave the Bay"),
+    el("div",{class:"rows"}, [
+      ["Book the Sugar Pine Railroad", "Monday 13:00, Labor Day. It sells out."],
+      ["Download offline maps", "Google Maps → profile → Offline maps. Get Yosemite, Mono Lake and Coarsegold."],
+      ["Text YNPTraffic to 333111", "Free NPS alerts on Valley parking and traffic diversions. SMS gets through where data doesn't."],
+      ["Screenshot the No Signal tab", "It is built to be a screenshot. Do it before you lose service."],
+      ["Check fire and air quality", "Restrictions are on park-wide. Smoke can change the whole weekend."],
+    ].map(([n,m]) => el("div",{class:"row"},[
+      el("div",{class:"grow"},[ el("div",{class:"nm",text:n}), el("div",{class:"mt",text:m}) ]),
+    ]))),
+  ]);
+}
+function verdictCard(day, res){
+  const v = verdictFor(day, res);
+  return el("div",{class:"card"},[
+    el("div",{class:"verdict"},[
+      pill(v.tone, v.tone === "ok" ? "Fits" : v.tone === "warn" ? "Tight" : "Overloaded"),
+      el("span",{class:"vt",text:v.txt}),
+      el("span",{class:"vn mono",text:fmt(res.endMin)}),
+    ]),
+    el("div",{class:"card-pad hint sm",style:"padding-top:0"},[
+      dur(res.driveMin) + " driving · " + dur(res.stopMin) + " on the ground · " +
+      "start " + fmt(res.startMin) + ", finish " + fmt(res.endMin) + ".",
+    ]),
+  ]);
+}
+function boardRows(day, now){
+  return el("div",{class:"tl"}, day.board.map(b => {
+    const isNow = b.t !== "—" && now && dayIndexFor(now.date) === DAYS.indexOf(day) &&
+                  Math.abs(hm(b.t) - now.min) < 45;
+    return el("div",{class:"tl-row" + (isNow ? " now" : "")},[
+      el("div",{class:"tl-time mono"}, b.t === "—" ? [el("span",{class:"muted",text:"open"})] : [fmt(hm(b.t))]),
+      el("div",{class:"tl-body"},[
+        el("div",{class:"tl-title"},[ b.title,
+          ...(b.who||[]).map(w=>avatar(w)),
+          b.by && b.by.length ? pill("cool","pickup: " + b.by.map(x=>byId(x)?.name).join(" / ")) : null ]),
+        b.note ? el("div",{class:"tl-note",text:b.note}) : null,
+        b.at ? el("div",{class:"tl-links"},[ mapsBtn(b.at) ]) : null,
+      ]),
+    ]);
+  }));
+}
+function quickJump(){
+  return el("div",{class:"card"},[
+    head("Jump to"),
+    el("div",{class:"card-pad",style:"padding-top:8px;display:flex;flex-wrap:wrap;gap:8px"},[
+      ["No signal card","offline"],["Fuel plan","drive"],["Crowd levels","crowds"],
+      ["Valley map","map"],["The log","log"],
+    ].map(([t,k]) => el("button",{class:"btn",onclick:()=>go(k),text:t}))),
+  ]);
+}
+
+/* =====================================================================
+   PLAN
+   ===================================================================== */
+function renderPlan(){
+  const p = document.getElementById("p-plan");
+  const now = paNow();
+  const kids = [];
+  kids.push(el("div",{class:"seg"}, DAYS.map(d => el("button",{
+    "aria-pressed": String(state.viewDay === d.id),
+    onclick:()=>{ state.viewDay = d.id; render(); },
+  },[ el("span",{style:"display:block",text:d.label}),
+      el("span",{style:"display:block;font-size:9.5px;font-weight:500;opacity:.7",text:d.date.slice(8)}) ]))));
+
+  const day = DAYS.find(d => d.id === state.viewDay) || DAYS[0];
+
+  if (day.kind === "board"){
+    kids.push(card([
+      head(day.name, day.drive),
+      boardRows(day, now),
+    ]));
+    if (day.id === "fri") kids.push(card([
+      head("Three arrivals, three cars"),
+      el("div",{class:"card-pad hint",style:"padding-top:6px"},[
+        "Dipto at 9:37a, Nachiket at 3:49p, then Sadrishya, Jovina and Shreyas together at 8:00p. ",
+        el("strong",{text:"The 8:00p wave is three people with luggage"}),
+        " — that is a full car on its own, so whoever fetches them should arrive empty.",
+      ]),
+    ]));
+    kids.push(planNotes(day));
+    paint(p, kids);
+    return;
+  }
+
+  /* variant picker */
+  const vkeys = Object.keys(day.variants);
+  if (vkeys.length > 1){
+    kids.push(card([
+      head("Which version of " + day.label + "?"),
+      el("div",{class:"card-pad",style:"padding-top:8px;display:flex;flex-direction:column;gap:8px"},
+        vkeys.map(k => {
+          const v = day.variants[k];
+          const r = runChain(day, k);
+          const vd = verdictFor(day, r);
+          const on = state.plan[day.id] === k;
+          return el("button",{
+            class:"btn wide", style:"flex-direction:column;align-items:stretch;gap:5px;padding:11px;text-align:left;" +
+              (on ? "background:var(--accent-soft);border-color:var(--accent);color:var(--ink)" : ""),
+            "aria-pressed": String(on),
+            onclick:()=>{ state.plan[day.id] = k; persist("plan"); render(); },
+          },[
+            el("span",{style:"display:flex;align-items:center;gap:7px;flex-wrap:wrap"},[
+              el("span",{style:"font-size:13.5px;font-weight:700",text:v.name}),
+              v.tag ? pill(k === "c" || v.tag === "Recommended" ? "ok" : "plain", v.tag) : null,
+            ]),
+            el("span",{class:"mono vsum",style:"font-size:11px;color:var(--ink-2);font-weight:400;line-height:1.4"},
+              [ "back " + fmt(r.endMin) + " · " + dur(r.driveMin) + " driving · " + vd.txt ]),
+          ]);
+        })),
+    ]));
+  }
+
+  const res = runChain(day, state.plan[day.id]);
+  kids.push(card([
+    head(day.name, day.drive),
+    el("div",{class:"card-pad hint sm",style:"padding-top:7px",text:res.variant.blurb || ""}),
+    ribbon(day, res, dayIndexFor(now.date) === DAYS.indexOf(day) ? now.min : null),
+  ]));
+  kids.push(verdictCard(day, res));
+
+  kids.push(card([
+    head("Hour by hour", "from " + fmt(res.startMin)),
+    el("div",{class:"tl"}, res.rows.map(r => {
+      const isNow = dayIndexFor(now.date) === DAYS.indexOf(day) && now.min >= r.start && now.min < r.end;
+      const place = PLACES[r.k === "drive" ? r.to : r.at];
+      return el("div",{class:"tl-row " + r.k + (isNow ? " now" : "")},[
+        el("div",{class:"tl-time mono"},[ fmt(r.start), el("small",{text:dur(r.min)}) ]),
+        el("div",{class:"tl-body"},[
+          el("div",{class:"tl-title"},[
+            r.k === "drive" ? ("drive → " + (place?.name || "next")) : r.title,
+          ]),
+          r.note ? el("div",{class:"tl-note",text:r.note}) : null,
+          (r.k === "drive" || r.at) ? el("div",{class:"tl-links"},[
+            mapsBtn(r.k === "drive" ? r.to : r.at, r.k === "drive" ? "Navigate" : "Open in Maps"),
+          ]) : null,
+        ]),
+      ]);
+    })),
+  ]));
+  kids.push(planNotes(day));
+  paint(p, kids);
+}
+
+const NOTES = {
+  fri:[ ["warn","Costco closes at 22:00.","Fill all three cars Friday night. Saturday's first fuel stop is six hours away and the last one before Yosemite is in Lee Vining."],
+        ["cool","Pack tonight.","Loading three cars at 04:40 with nine people costs you the sunrise you're driving six hours for."] ],
+  sat:[ ["bad","Lee Vining is the last fuel before the park.","Tioga Gas Mart, open 6:30–21:00. After that it is 40 miles of climbing to the gate and there is no fuel until Crane Flat."],
+        ["warn","Sonora Pass is a real mountain road.","CA-108 tops out at 9,624 ft with 26% grades on the east side. It is open and paved and fine in a car — but it is not a freeway, and the last stretch is slow."],
+        ["cool","Saturday night is properly dark.","37% waning crescent that doesn't rise until after midnight. Astronomical dark from about 20:50 — the Milky Way will be up. This is the stargazing night, not Sunday."],
+        ["ok","One $35 payment covers Sunday too.","Per vehicle, good seven days. Three cars means three payments unless someone has an America the Beautiful pass — that covers the car it's in."] ],
+  sun:[ ["bad","Park once. Do not move the car.","Curry Village and the Trailhead lot fill by 08:30 on a holiday Sunday. Once you're out, you will not find a second space. The free shuttle covers everything in the east Valley."],
+        ["warn","Vernal Fall is a trickle in September.","The Mist Trail will not mist you. Good news: dry granite instead of a slick staircase. Manage expectations before someone hikes 2,200 ft expecting the postcard."],
+        ["cool","Tenaya from the Valley is a five-hour round trip.","It is 40 minutes off Saturday's route and 90 minutes each way from the Valley. If you want Tenaya, take it Saturday."] ],
+  mon:[ ["bad","The airport car cannot do the hot tub.","Fish Camp to SFO is about 4.5 hours before Labor Day return traffic. Leaving the railroad at 14:15 puts you at SFO around 18:45 with nothing to spare. Adding Palo Alto breaks it."],
+        ["ok","A 9:30p flight is fine on that timing.","Arriving 18:45–19:15 leaves over two hours for a domestic departure. It is only tight if anyone is flying international."],
+        ["cool","Mariposa Grove is 45 minutes away.","If Saturday ran out of road and you never got sequoias, the grove is right by Fish Camp. It needs 2–3 hours, so it is an either/or with the railroad, not a both."] ],
+  tue:[ ["warn","Somebody drives at 04:00 on no sleep.","Two 06:00 departures. Decide who is driving on Monday night, and let them skip the last round of the party."] ],
+};
+function planNotes(day){
+  const rows = NOTES[day.id] || [];
+  if (!rows.length) return null;
+  return card([
+    head("Worth knowing"),
+    el("div",{class:"card-pad",style:"padding-top:8px;display:flex;flex-direction:column;gap:8px"},
+      rows.map(([tone,s,r]) => flag(tone, s, r))),
+  ]);
+}
+
+/* =====================================================================
+   DRIVE
+   ===================================================================== */
+function renderDrive(){
+  const p = document.getElementById("p-drive");
+  const kids = [];
+
+  kids.push(card([
+    head("Saturday's route call", "the one real decision"),
+    el("div",{class:"card-pad",style:"padding-top:9px;display:flex;flex-direction:column;gap:10px"},[
+      el("div",{class:"hint"},[ el("strong",{text:"Sonora Pass (CA-108) — about 6h15m. "}),
+        "The honest route to Mono Lake. Open since 30 April. Over the Sierra at 9,624 ft, down to US-395, north to Lee Vining. You enter Yosemite once, at Tioga Pass, heading west." ]),
+      el("div",{class:"hint"},[ el("strong",{text:"Through the park (CA-120) — about 5h30m on paper. "}),
+        "Shorter, but it means entering Yosemite at Big Oak Flat, crossing all 39 miles of Tioga Road, exiting at Tioga Pass to reach Mono Lake — then driving that same road back. You would cross Tioga twice and see it first in a hurry." ]),
+      flag("ok","Take Sonora.","The 45 minutes you'd save on paper get eaten by the Big Oak Flat gate queue and a doubled Tioga crossing. Sonora also means Mono Lake arrives as a real stop rather than a detour."),
+    ]),
+  ]));
+
+  kids.push(card([
+    head("Fuel plan", "no gas in Yosemite Valley"),
+    el("div",{class:"rows"}, FUEL.map(f => el("div",{class:"row"},[
+      el("div",{class:"grow"},[
+        el("div",{class:"nm"},[ f.nm, " ", pill(f.tone, f.hrs) ]),
+        el("div",{class:"mt",text:f.when + " — " + f.why}),
+      ]),
+      f.key ? mapsBtn(f.key, "Map") : null,
+    ]))),
+  ]));
+
+  kids.push(card([
+    head("Check before you drive", "opens in your browser"),
+    el("div",{class:"card-pad hint sm",style:"padding-top:7px",text:"This page can't pull live data — artifacts are sandboxed against outside network calls. These are the real sources, one tap away."}),
+    el("div",{class:"rows"}, LIVE.map(l => el("div",{class:"row"},[
+      el("div",{class:"grow"},[ el("div",{class:"nm",text:l.nm}), el("div",{class:"mt",text:l.note}) ]),
+      el("a",{class:"btn sm",href:l.url,target:"_blank",rel:"noopener",text:"Open"}),
+    ]))),
+  ]));
+
+  kids.push(card([
+    head("Traffic alerts that work without data"),
+    el("div",{class:"card-pad",style:"padding-top:9px;display:flex;flex-direction:column;gap:9px"},[
+      el("div",{class:"hint"},[ "Text ", el("strong",{text:"YNPTraffic"}), " to ", el("strong",{text:"333111"}),
+        " for free NPS alerts on Valley parking and traffic diversions. SMS gets through on one bar when data won't — this is the single most useful thing you can set up before Friday." ]),
+      el("div",{class:"hint"},[ "Recorded road conditions: ", el("a",{href:"tel:2093720200",text:"(209) 372-0200"}), ", press 1 then 1." ]),
+      el("div",{class:"btnrow"},[
+        el("a",{class:"btn go",href:"sms:333111?&body=YNPTraffic",text:"Text YNPTraffic"}),
+        el("a",{class:"btn",href:"tel:2093720200",text:"Call road line"}),
+      ]),
+    ]),
+  ]));
+
+  kids.push(card([
+    head("Timing rules of thumb"),
+    el("div",{class:"rows"},[
+      ["Into the Valley before 08:00","Or after 16:00. Between 10:00 and 12:00 the South Entrance can be a 45-minute crawl on a holiday."],
+      ["Park once, then shuttle","The free Valleywide (green) and East Valley (purple) buses run 07:00–22:00, every 8–30 minutes. Moving the car is how you lose an afternoon."],
+      ["Tioga Road is slower than it looks","39 miles, 45 mph tops, and you will want to stop. Budget 100 minutes end to end, not 60."],
+      ["Glacier Point Road adds 45 minutes each way","16 miles from Chinquapin. Hazard-tree work has been causing ~15-minute delays 08:00–16:00 — check conditions."],
+    ].map(([n,m]) => el("div",{class:"row"},[
+      el("div",{class:"grow"},[ el("div",{class:"nm",text:n}), el("div",{class:"mt",text:m}) ]),
+    ]))),
+  ]));
+
+  paint(p, kids);
+}
+
+/* =====================================================================
+   CROWDS
+   ===================================================================== */
+function renderCrowds(){
+  const p = document.getElementById("p-crowds");
+  const now = paNow();
+  const inTrip = dayIndexFor(now.date) >= 0;
+  const hourIdx = Math.floor(now.min/60) - CROWD_H0;
+  const kids = [];
+
+  kids.push(card([
+    head("Rush levels", inTrip ? "now " + fmt(now.min) : "typical holiday weekend"),
+    el("div",{class:"card-pad hint sm",style:"padding-top:7px",
+      text:"Modelled from reported Labor Day patterns — not a live feed. Treat it as a good guess about when to move, not a measurement."}),
+    el("div",{class:"crowd"}, CROWDS.map(c => {
+      const cur = (hourIdx >= 0 && hourIdx < c.lv.length) ? c.lv[hourIdx] : null;
+      const tone = cur === null ? "plain" : cur >= 4 ? "bad" : cur === 3 ? "bad" : cur === 2 ? "warn" : "ok";
+      const word = cur === null ? "closed hours" : cur >= 4 ? "Turned away" : cur === 3 ? "Packed" : cur === 2 ? "Busy" : "Clear";
+      return el("div",{class:"crowd-row"},[
+        el("div",{class:"crowd-top"},[
+          el("span",{class:"nm",text:c.nm}),
+          inTrip && cur !== null ? pill(tone, word) : null,
+          mapsBtn(c.key,"Map"),
+        ]),
+        el("div",{class:"bars"}, c.lv.map((v,i) =>
+          el("i",{class:"l"+v + (inTrip && i === hourIdx ? " nowbar" : "")}))),
+        el("div",{class:"hours"},[el("span",{text:"5a"}),el("span",{text:"9a"}),el("span",{text:"1p"}),el("span",{text:"5p"}),el("span",{text:"9p"})]),
+        el("div",{class:"hint sm",text:c.tip}),
+      ]);
+    })),
+  ]));
+
+  kids.push(card([
+    head("What this means for you"),
+    el("div",{class:"card-pad",style:"padding-top:9px;display:flex;flex-direction:column;gap:8px"},[
+      flag("ok","Your Sunday plan is already the right answer.","Tunnel View at 6:15a and parked by 7:20a puts you ahead of everything on this page. The 4:15a alarm is the whole reason it works."),
+      flag("warn","Your Saturday gate is the easy one.","Tioga Pass is the calmest entrance in the park and you hit it around 13:35 — a non-event. The South Entrance on Sunday morning is the one to beat, and you beat it by hours."),
+      flag("cool","Glacier Point at sunset means roadside parking.","Arriving 18:30 on a Saturday, the lot will be full. Expect to park along the road and walk 5–10 minutes. Budget it."),
+    ]),
+  ]));
+
+  paint(p, kids);
+}
+
+/* =====================================================================
+   MAPS — hand-drawn schematics. No tiles, no network, works at 8,000 ft
+   with zero bars. Every pin taps out to real navigation.
+   ===================================================================== */
+const LOOP_PINS = [
+  { x:26,  y:96,  k:null,        nm:"Bay Area",        s:"Fri night" },
+  { x:118, y:44,  k:null,        nm:"Sonora Pass",     s:"9,624 ft" },
+  { x:305, y:36,  k:"monolake",  nm:"Mono Lake",       s:"Sat 11:15a" },
+  { x:311, y:66,  k:"leevining", nm:"Lee Vining",      s:"LAST FUEL" },
+  { x:284, y:92,  k:"tiogapass", nm:"Tioga Pass",      s:"enter here" },
+  { x:225, y:104, k:"tenaya",    nm:"Tenaya · Olmsted",s:"on the way" },
+  { x:158, y:112, k:"craneflat", nm:"Crane Flat",      s:"gas" },
+  { x:181, y:145, k:"curry",     nm:"Yosemite Valley", s:"Sun all day" },
+  { x:206, y:176, k:"glacier",   nm:"Glacier Point",   s:"Sat sunset" },
+  { x:196, y:206, k:"southent",  nm:"South Entrance",  s:"Sun 5:45a" },
+  { x:246, y:214, k:"railroad",  nm:"Fish Camp",       s:"Mon 1p" },
+  { x:172, y:240, k:"airbnb",    nm:"Airbnb",          s:"Coarsegold" },
+];
+function numPin(x, y, i, color){
+  return '<circle cx="' + x + '" cy="' + y + '" r="8" fill="' + color +
+    '" stroke="var(--sunk)" stroke-width="2"/>' +
+    '<text x="' + x + '" y="' + (y + 3.1) + '" text-anchor="middle" font-size="9" ' +
+    'font-weight="700" font-family="IBM Plex Mono, monospace" fill="var(--on-accent)">' + i + '</text>';
+}
+function loopMap(){
+  const road = (d, dash) => '<path d="' + d + '" fill="none" stroke="var(--ink-3)" stroke-width="2.2"' +
+    (dash ? ' stroke-dasharray="5 4"' : '') + ' stroke-linecap="round" opacity="0.75"/>';
+  let s = '<svg viewBox="0 0 360 268" role="img" aria-label="Schematic of the trip loop">';
+  s += '<rect x="0" y="0" width="360" height="268" fill="var(--sunk)"/>';
+  /* the Sierra crest, as a backdrop */
+  s += '<path d="M150 30 L182 78 L206 48 L238 96 L262 62 L300 118 L330 84 L352 130 L352 268 L120 268 Z" fill="var(--surface-2)" opacity="0.4"/>';
+  s += road("M26 96 C 60 74, 90 52, 118 44 C 170 28, 250 30, 305 36");
+  s += road("M305 36 L311 66 L284 92 L225 104 L158 112");
+  s += road("M158 112 L181 145");
+  s += road("M158 112 C 176 140, 196 152, 206 176");
+  s += road("M206 176 L196 206 L172 240");
+  s += road("M196 206 L246 214");
+  s += road("M172 240 C 100 250, 40 190, 26 96", true);
+  LOOP_PINS.forEach((p, i) => { s += numPin(p.x, p.y, i + 1, "var(--accent)"); });
+  s += '</svg>';
+  return s;
+}
+const VALLEY_PINS = [
+  { x:34,  y:158, k:"tunnelview", nm:"Tunnel View",       s:"sunrise 6:33a" },
+  { x:82,  y:140, k:null,         nm:"Bridalveil Fall",   s:"5 min walk" },
+  { x:118, y:112, k:"elcap",      nm:"El Capitan Meadow", s:"spot climbers" },
+  { x:186, y:64,  k:null,         nm:"Yosemite Falls",    s:"dry in Sept" },
+  { x:206, y:96,  k:"village",    nm:"Yosemite Village",  s:"biggest lot" },
+  { x:200, y:126, k:"sentinelbr", nm:"Sentinel Bridge",   s:"Half Dome reflection" },
+  { x:252, y:132, k:"curry",      nm:"Curry Village",     s:"park + pizza" },
+  { x:278, y:140, k:"trailhead",  nm:"Trailhead lot",     s:"closest to Mist" },
+  { x:302, y:152, k:"happyisles", nm:"Happy Isles",       s:"Mist Trail start" },
+  { x:322, y:172, k:"nevada",     nm:"Nevada Fall",       s:"3.3 mi up" },
+  { x:318, y:104, k:null,         nm:"Half Dome",         s:"8,839 ft" },
+];
+function valleyMap(){
+  let s = '<svg viewBox="0 0 360 210" role="img" aria-label="Schematic of eastern Yosemite Valley">';
+  s += '<rect x="0" y="0" width="360" height="210" fill="var(--sunk)"/>';
+  /* valley walls */
+  s += '<path d="M0 78 C 60 58, 130 44, 210 46 C 280 48, 330 62, 360 74 L360 0 L0 0 Z" fill="var(--surface-2)"/>';
+  s += '<path d="M0 176 C 70 190, 150 196, 230 190 C 300 184, 336 176, 360 168 L360 210 L0 210 Z" fill="var(--surface-2)"/>';
+  /* merced river */
+  s += '<path d="M330 150 C 280 138, 250 148, 210 132 C 170 116, 130 128, 84 122 C 50 118, 20 128, 0 126" fill="none" stroke="var(--cool)" stroke-width="2.6" opacity="0.8" stroke-linecap="round"/>';
+  /* the loop road */
+  s += '<path d="M34 158 C 90 150, 140 128, 196 112 C 240 100, 280 106, 306 120" fill="none" stroke="var(--ink-3)" stroke-width="2.4" opacity="0.8" stroke-linecap="round"/>';
+  s += '<path d="M306 120 C 300 142, 270 150, 234 148 C 180 145, 120 152, 60 168" fill="none" stroke="var(--ink-3)" stroke-width="2.4" opacity="0.55" stroke-dasharray="4 4" stroke-linecap="round"/>';
+  /* mist trail */
+  s += '<path d="M302 152 L312 162 L318 172" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-dasharray="3 3" stroke-linecap="round"/>';
+  VALLEY_PINS.forEach((p, i) => {
+    const parkish = ["village","curry","trailhead"].indexOf(p.k) >= 0;
+    s += numPin(p.x, p.y, i + 1, parkish ? "var(--cool)" : "var(--accent)");
+  });
+  s += '</svg>';
+  return s;
+}
+function pinList(pins){
+  return el("div",{class:"rows"}, pins.map((p,i) => el("div",{class:"row"},[
+    el("span",{class:"mono",style:"font-size:11px;color:var(--ink-3);width:18px;flex:none",text:String(i+1)}),
+    el("div",{class:"grow"},[ el("div",{class:"nm",text:p.nm}), el("div",{class:"mt",text:p.s}) ]),
+    p.k ? mapsBtn(p.k,"Go") : null,
+  ])));
+}
+function renderMap(){
+  const p = document.getElementById("p-map");
+  p.replaceChildren(
+    card([
+      head("The loop", "~1,000 miles"),
+      el("div",{class:"card-pad hint sm",style:"padding-top:7px",text:"Schematic, not to scale. Drawn into the page so it still works when your phone has no bars."}),
+      el("div",{class:"mapbox",html:loopMap()}),
+      pinList(LOOP_PINS),
+    ]),
+    card([
+      head("Eastern Yosemite Valley", "Sunday"),
+      el("div",{class:"card-pad hint sm",style:"padding-top:7px",text:"Solid road runs east, dashed runs west — the Valley loop is one-way. Blue pins are the three parking areas; the dashed orange line is the Mist Trail."}),
+      el("div",{class:"mapbox",html:valleyMap()}),
+      pinList(VALLEY_PINS),
+    ]),
+    card([
+      head("Shuttles", "free, 07:00–22:00"),
+      el("div",{class:"rows"},[
+        ["Valleywide — green route","Every 22–32 min. All lodges, food, campgrounds and trailheads in the Valley."],
+        ["East Valley — purple route","Every 8–12 min. Yosemite Village, Curry Village, the Pines campgrounds, and the trailheads you need on Sunday."],
+        ["Tuolumne Meadows shuttle","Runs through about 13 September. Only relevant if you spend real time up on Tioga Road."],
+      ].map(([n,m]) => el("div",{class:"row"},[
+        el("div",{class:"grow"},[ el("div",{class:"nm",text:n}), el("div",{class:"mt",text:m}) ]),
+      ]))),
+    ]),
+    card([
+      head("Download these before you go"),
+      el("div",{class:"card-pad hint",style:"padding-top:8px"},[
+        "Google Maps → your profile picture → ", el("strong",{text:"Offline maps"}), " → Select your own map. ",
+        "Grab three areas: Yosemite National Park, Mono Lake / Lee Vining, and Oakhurst / Coarsegold. ",
+        "Offline maps give you turn-by-turn with no signal, which is most of Saturday and all of the Mist Trail.",
+      ]),
+    ]),
+  );
+}
+
+/* =====================================================================
+   DO — nothing preselected. Vote, then rate it afterwards.
+   ===================================================================== */
+function renderDo(){
+  const p = document.getElementById("p-do");
+  const zones = [];
+  for (const a of ACTS) if (zones.indexOf(a.zone) < 0) zones.push(a.zone);
+  const kids = [ card([
+    head("What we're actually doing"),
+    el("div",{class:"card-pad hint sm",style:"padding-top:7px",
+      text:"Nothing is picked for you. Tap I'm in on anything you want — everyone can see the count, so the group decides itself. Star things after you've done them; the Log tab collects the ratings."}),
+  ]) ];
+
+  for (const z of zones){
+    kids.push(card([
+      head(z),
+      el("div",{class:"rows"}, ACTS.filter(a => a.zone === z).map(a => {
+        const voters = state.votes[a.id] || [];
+        const iam = state.me && voters.indexOf(state.me) >= 0;
+        return el("div",{class:"row",style:"align-items:flex-start;flex-direction:column;gap:7px"},[
+          el("div",{style:"display:flex;align-items:baseline;gap:8px;width:100%;flex-wrap:wrap"},[
+            el("span",{style:"font-family:var(--f-display);font-size:14.5px;font-weight:700;flex:1;min-width:120px",text:a.nm}),
+            pill(a.hard === "Hard" ? "bad" : a.hard === "Easy" || a.hard === "Sit down" ? "ok" : "warn", a.hard),
+          ]),
+          el("div",{class:"mono",style:"font-size:11px;color:var(--ink-3);letter-spacing:.03em",
+            text: a.dist + " · " + a.gain + " · " + a.time }),
+          el("div",{class:"hint sm",text:a.note}),
+          el("div",{style:"display:flex;align-items:center;gap:8px;width:100%;flex-wrap:wrap"},[
+            el("button",{ class:"btn sm" + (iam ? " go" : ""), "aria-pressed":String(iam),
+              onclick:()=>toggleVote(a.id), text: iam ? "You're in" : "I'm in" }),
+            el("div",{class:"who"}, voters.map(v => avatar(v))),
+            voters.length ? el("span",{class:"mono",style:"font-size:11px;color:var(--ink-3)",text:voters.length + "/9"}) : null,
+            mapsBtn(a.key,"Map"),
+          ]),
+          starRow(a.id),
+        ]);
+      })),
+    ]));
+  }
+  paint(p, kids);
+}
+function toggleVote(actId){
+  if (!state.me){ go("now"); return; }
+  const cur = state.votes[actId] ? state.votes[actId].slice() : [];
+  const i = cur.indexOf(state.me);
+  if (i >= 0) cur.splice(i,1); else cur.push(state.me);
+  state.votes = Object.assign({}, state.votes, { [actId]: cur });
+  persist("votes"); render();
+}
+function starRow(actId){
+  const mine = (state.ratings[actId] || {})[state.me] || 0;
+  const all = Object.values(state.ratings[actId] || {});
+  const avg = all.length ? (all.reduce((a,b)=>a+b,0)/all.length) : 0;
+  const stars = el("div",{class:"stars"});
+  for (let n = 1; n <= 5; n++){
+    stars.append(el("button",{ class:"star" + (n <= mine ? " on" : ""), "aria-label":"Rate " + n,
+      onclick:()=>rate(actId,n),
+      html:'<svg viewBox="0 0 20 20" width="20" height="20" fill="currentColor"><path d="M10 1.6l2.5 5.3 5.7.8-4.1 4 1 5.7L10 14.7 4.9 17.4l1-5.7-4.1-4 5.7-.8z"/></svg>' }));
+  }
+  return el("div",{style:"display:flex;align-items:center;gap:8px"},[
+    stars,
+    avg ? el("span",{class:"mono",style:"font-size:11px;color:var(--ink-3)",text:avg.toFixed(1) + " avg · " + all.length}) 
+        : el("span",{class:"tiny muted",text:"rate it after"}),
+  ]);
+}
+function rate(actId, n){
+  if (!state.me){ go("now"); return; }
+  const cur = Object.assign({}, state.ratings[actId] || {});
+  cur[state.me] = cur[state.me] === n ? 0 : n;
+  if (!cur[state.me]) delete cur[state.me];
+  state.ratings = Object.assign({}, state.ratings, { [actId]: cur });
+  persist("ratings"); render();
+}
+
+/* =====================================================================
+   CREW
+   ===================================================================== */
+const CHECKIN_SPOTS = ["Left the house","At the car","Fuel stop","Mono Lake","Lee Vining","Tioga Pass gate",
+  "Tenaya Lake","Glacier Point","Tunnel View","Curry parking","Top of Vernal","Nevada Fall","Back at the Airbnb"];
+
+function renderCrew(){
+  const p = document.getElementById("p-crew");
+  const kids = [];
+
+  /* cars */
+  const unassigned = CREW.filter(c => !Object.values(state.cars).some(car => car.who.indexOf(c.id) >= 0));
+  kids.push(card([
+    head("Three cars, nine people"),
+    el("div",{class:"card-pad hint sm",style:"padding-top:7px",text:"Tap a face to move them to the next car. Monday splits these up — see the bottom of this tab."}),
+    el("div",{class:"rows"}, Object.entries(state.cars).map(([ck,car]) => el("div",{class:"row"},[
+      el("div",{class:"grow"},[
+        el("div",{class:"nm",text:car.nm}),
+        el("div",{class:"who",style:"margin-top:6px"}, car.who.map(w =>
+          el("button",{class:"avbtn",title:"Move " + (byId(w)?.name||"") + " to the next car",
+            onclick:()=>moveCar(w)},[ avatar(w, true) ]))),
+      ]),
+      el("span",{class:"mono",style:"font-size:12px;color:var(--ink-3)",text:car.who.length + "/3"}),
+    ]))),
+    unassigned.length ? el("div",{class:"card-pad"},[
+      el("div",{class:"eyebrow",text:"Not in a car"}),
+      el("div",{class:"who",style:"margin-top:6px"}, unassigned.map(c =>
+        el("button",{class:"avbtn",onclick:()=>moveCar(c.id)},[ avatar(c.id, true) ]))),
+    ]) : null,
+  ]));
+
+  /* check in */
+  kids.push(card([
+    head("Where is everyone?"),
+    state.me ? el("div",{class:"card-pad",style:"padding-top:8px;display:flex;flex-wrap:wrap;gap:6px"},
+      CHECKIN_SPOTS.map(s => el("button",{class:"btn sm",text:s,onclick:()=>checkIn(s)})))
+      : el("div",{class:"card-pad hint sm",style:"padding-top:7px",text:"Pick who you are on the Now tab first."}),
+    state.checkins.length ? el("div",{class:"rows"}, state.checkins.slice(0,8).map(c => el("div",{class:"row"},[
+      avatar(c.who),
+      el("div",{class:"grow"},[
+        el("div",{class:"nm",text:(byId(c.who)?.name || "Someone") + " — " + c.where}),
+        el("div",{class:"mt",text:relTime(c.ts)}),
+      ]),
+    ]))) : el("div",{class:"card-pad hint sm",style:"padding-top:0",text:"No check-ins yet. These only sync where there's signal — expect gaps all Saturday."}),
+  ]));
+
+  /* packing */
+  const done = PACK_SEED.filter(x => state.packing[x.id]?.done).length;
+  kids.push(card([
+    head("Packing list", done + "/" + PACK_SEED.length),
+    el("div",{class:"rows"}, PACK_SEED.map(it => {
+      const rec = state.packing[it.id] || {};
+      return el("div",{class:"row" + (rec.done ? " done" : "")},[
+        el("button",{class:"chk","aria-pressed":String(!!rec.done),"aria-label":it.nm,onclick:()=>togglePack(it.id),
+          html:'<svg viewBox="0 0 14 14" fill="none" stroke="var(--on-accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7.5 L5.5 11 L12 3.5"/></svg>'}),
+        el("div",{class:"grow"},[ el("div",{class:"nm",text:it.nm}), el("div",{class:"mt",text:it.mt}) ]),
+        rec.by ? avatar(rec.by) : null,
+      ]);
+    })),
+  ]));
+
+  /* monday split */
+  kids.push(card([
+    head("Monday — the split", "this is the tight one"),
+    el("div",{class:"card-pad",style:"padding-top:9px;display:flex;flex-direction:column;gap:9px"},[
+      el("div",{class:"hint"},[ el("strong",{text:"Airport car — leaves Fish Camp 14:15, no stops. "}),
+        "Sadrishya, Jovina and Shreyas fly at 21:30. SFO by about 18:45 with Labor Day traffic. No Palo Alto, no jacuzzi, no dinner stop." ]),
+      el("div",{class:"hint"},[ el("strong",{text:"Home cars — same departure, Palo Alto by about 18:15. "}),
+        "Hot tub, unpack, sleep. Somebody in this group is doing the 04:00 SFO run on Tuesday for Dipto and Nachiket." ]),
+      flag("warn","If the airport car wants the hot tub anyway","Skip the railroad and drive straight from Oakhurst after brunch — that buys about two hours and makes Palo Alto plus SFO possible."),
+    ]),
+  ]));
+
+  /* costs */
+  kids.push(card([
+    head("What this costs", "estimates"),
+    el("div",{class:"rows"},[
+      ["Park entrance","$35 per vehicle, good 7 days — $105 for three cars. One America the Beautiful pass covers the car it rides in."],
+      ["Mono Lake South Tufa","$3 per adult, cash in the envelope. $27 for nine. National Park passes are valid here."],
+      ["Fuel","Roughly 1,000 miles per car. At ~28 mpg and California prices near the park, budget $170–200 a car."],
+      ["Sugar Pine Railroad","Around $30 a head — confirm when you book. Nine tickets on Labor Day, so book early."],
+    ].map(([n,m]) => el("div",{class:"row"},[
+      el("div",{class:"grow"},[ el("div",{class:"nm",text:n}), el("div",{class:"mt",text:m}) ]),
+    ]))),
+  ]));
+
+  paint(p, kids);
+}
+function moveCar(who){
+  const keys = Object.keys(state.cars);
+  const cur = keys.findIndex(k => state.cars[k].who.indexOf(who) >= 0);
+  const next = keys[(cur + 1) % keys.length];
+  const cars = {};
+  for (const k of keys) cars[k] = { nm:state.cars[k].nm, who:state.cars[k].who.filter(x => x !== who) };
+  cars[next].who = cars[next].who.concat([who]);
+  state.cars = cars; persist("cars"); render();
+}
+function togglePack(id){
+  const rec = state.packing[id] || {};
+  const now = rec.done ? {} : { done:true, by:state.me || null };
+  state.packing = Object.assign({}, state.packing, { [id]: now });
+  persist("packing"); render();
+}
+function checkIn(where){ addToCollection("checkins", { who:state.me, where, ts:Date.now() }); }
+function relTime(ts){
+  const m = Math.round((Date.now() - ts)/60000);
+  if (m < 1) return "just now";
+  if (m < 60) return m + " min ago";
+  const h = Math.round(m/60);
+  if (h < 24) return h + (h === 1 ? " hour ago" : " hours ago");
+  return Math.round(h/24) + " days ago";
+}
+
+/* =====================================================================
+   NO SIGNAL — built to be screenshotted
+   ===================================================================== */
+function renderOffline(){
+  const p = document.getElementById("p-offline");
+  const rows = [
+    ["Fri 20:00","Fuel all cars at Costco — closes 22:00. Pack tonight."],
+    ["Sat 5:00a","LEAVE. Sonora Pass (CA-108) to Mono Lake, ~6h15m."],
+    ["Sat 12:30p","Lee Vining — LAST FUEL BEFORE YOSEMITE. Tioga Gas Mart, 6:30a–9p."],
+    ["Sat 1:35p","Tioga Pass entrance. $35/car, covers Sunday."],
+    ["Sat 6:35p","Glacier Point. Sunset 7:20p. Dark ~8:50p, no moon."],
+    ["Sat 11:30p","Back at the Airbnb. Valero is shut — Chukchansi is 24h."],
+    ["Sun 4:15a","LEAVE. This is the alarm that makes the day work."],
+    ["Sun 6:15a","Tunnel View. Sunrise 6:33a."],
+    ["Sun 7:20a","Park at Curry / Trailhead lot. PARK ONCE. Lots full by 8:30a."],
+    ["Sun 7:45a","On the Mist Trail. 6.6 mi, 2,200 ft, back ~1:15p."],
+    ["Sun 6:45p","Back at the Airbnb."],
+    ["Mon 11:00a","Checkout. Brunch in Oakhurst."],
+    ["Mon 12:45p","Fish Camp for the 1:00p train."],
+    ["Mon 2:15p","Split — airport car direct to SFO, ~6:45p."],
+    ["Tue 4:00a","Leave for SFO. Dipto + Nachiket fly at 6:00a."],
+  ];
+  const places = [
+    ["Airbnb","42786 Revis Way, Coarsegold CA 93614"],
+    ["24h fuel + food","Chukchansi Gold, Coarsegold"],
+    ["Last fuel east","Tioga Gas Mart, Lee Vining — 6:30a–9p"],
+    ["In-park fuel","Crane Flat and Wawona. NONE in Yosemite Valley."],
+    ["Palo Alto","3560 Rambla Pl"],
+    ["Mountain View","1929 Crisanto Ave"],
+  ];
+  p.replaceChildren(
+    el("div",{class:"card-pad",style:"padding:0 0 2px"},[
+      el("div",{class:"hint"},[ el("strong",{text:"Screenshot this page now. "}),
+        "Cell service dies on Tioga Road, at Glacier Point and across most of the Valley. A screenshot works on a dead battery's last 2%; this app does not." ]),
+    ]),
+    el("div",{class:"offcard"},[
+      el("h2",{text:"Nine Over Tioga — no signal card"}),
+      el("div",{class:"offgrid"}, rows.map(([k,v]) => el("div",{class:"offrow"},[
+        el("span",{class:"k mono",text:k}), el("span",{class:"v",text:v}),
+      ]))),
+    ]),
+    card([
+      head("Addresses"),
+      el("div",{class:"offgrid"}, places.map(([k,v]) => el("div",{class:"offrow"},[
+        el("span",{class:"k mono",text:k}), el("span",{class:"v",text:v}),
+      ]))),
+    ]),
+    card([
+      head("If we get separated"),
+      el("div",{class:"card-pad",style:"padding-top:9px;display:flex;flex-direction:column;gap:9px"},[
+        el("div",{class:"hint"},[ el("strong",{text:"1. Don't wait where there's no signal. "}),
+          "Drive to the nearest spot with bars and text from there. Eastern Yosemite Valley (Village, Curry) has Verizon. Tioga Road, Glacier Point and Wawona mostly do not." ]),
+        el("div",{class:"hint"},[ el("strong",{text:"2. Default rendezvous, in order: "}),
+          "Curry Village parking on Sunday · the Glacier Point lot on Saturday evening · Crane Flat store if you're up on Tioga · the Airbnb if all else fails." ]),
+        el("div",{class:"hint"},[ el("strong",{text:"3. Text, don't call. "}),
+          "SMS gets through on one bar when a call won't connect and data won't load." ]),
+        el("div",{class:"hint"},[ el("strong",{text:"4. Trailhead rule. "}),
+          "Nobody hikes alone. The Mist Trail is one path — if you're separated, the person ahead waits at the top of Vernal, not the top of Nevada." ]),
+        el("div",{class:"hint"},[ el("strong",{text:"5. Emergency: "}),
+          "911 works on any carrier that has coverage, even without your own. Park dispatch is ",
+          el("a",{href:"tel:2093790200",text:"(209) 379-0200"}), "." ]),
+      ]),
+    ]),
+    card([
+      head("Wifi"),
+      el("div",{class:"card-pad hint",style:"padding-top:8px",
+        text:"In the park, wifi is for registered overnight guests only — Yosemite Valley Lodge, Curry Village, the Ahwahnee, Wawona Hotel. You are none of those, so plan on the Airbnb being your only reliable connection all weekend. Open this app there each morning."}),
+    ]),
+    el("div",{class:"card"},[
+      el("div",{class:"card-pad"},[
+        el("button",{class:"btn wide go",text:"Save an offline copy of this app",onclick:saveOffline}),
+        el("div",{class:"tiny muted",style:"margin-top:8px",
+          text:"Downloads a single HTML file. Open it from Files with no signal at all — you'll get everything except the shared edits."}),
+      ]),
+    ]),
+  );
+}
+
+/* =====================================================================
+   LOG — the keepsake half
+   ===================================================================== */
+function renderLog(){
+  const p = document.getElementById("p-log");
+  const kids = [];
+
+  kids.push(el("div",{class:"card"},[
+    el("blockquote",{class:"quote",style:"margin:14px"},[
+      "Leave with deeper friendships.",
+      el("cite",{text:"— Kshitiz, in the original itinerary spreadsheet"}),
+    ]),
+  ]));
+
+  kids.push(card([
+    head("Add to the log"),
+    el("div",{class:"card-pad",style:"padding-top:8px;display:flex;flex-direction:column;gap:8px"},[
+      el("textarea",{id:"logText",placeholder: state.me
+        ? "What just happened? A quote, a wrong turn, who fell asleep first…"
+        : "Pick who you are on the Now tab first."}),
+      el("div",{class:"btnrow"},[
+        el("button",{class:"btn go",text:"Post",onclick:postLog}),
+        el("button",{class:"btn",text:"Best moment today",onclick:()=>{
+          const t = document.getElementById("logText");
+          if (t){ t.value = "Best moment today: "; t.focus(); }
+        }}),
+      ]),
+    ]),
+  ]));
+
+  const entries = state.log.slice().sort((a,b) => b.ts - a.ts);
+  kids.push(card([
+    head("The log", entries.length ? entries.length + " entries" : "nothing yet"),
+    entries.length
+      ? el("div",{}, entries.map(e => el("div",{class:"entry"},[
+          avatar(e.who),
+          el("div",{class:"ebody"},[
+            el("div",{class:"emeta"},[
+              el("span",{class:"ewho",text:byId(e.who)?.name || "Someone"}),
+              el("span",{class:"ewhen mono",text:stamp(e.ts)}),
+            ]),
+            el("div",{class:"etext",text:e.text}),
+          ]),
+        ])))
+      : el("div",{class:"card-pad hint sm",style:"padding-top:0",
+          text:"Empty for now. That's the point — this fills up over four days and becomes the thing you read in a year."}),
+  ]));
+
+  /* ratings roundup */
+  const rated = ACTS.map(a => {
+    const all = Object.values(state.ratings[a.id] || {});
+    return { nm:a.nm, n:all.length, avg: all.length ? all.reduce((x,y)=>x+y,0)/all.length : 0 };
+  }).filter(r => r.n > 0).sort((a,b) => b.avg - a.avg);
+  if (rated.length) kids.push(card([
+    head("How it actually ranked"),
+    el("div",{class:"rows"}, rated.map((r,i) => el("div",{class:"row"},[
+      el("span",{class:"mono",style:"font-size:12px;color:var(--ink-3);width:20px;flex:none",text:String(i+1)}),
+      el("div",{class:"grow"},[ el("div",{class:"nm",text:r.nm}),
+        el("div",{class:"mt",text:r.n + (r.n === 1 ? " rating" : " ratings")}) ]),
+      el("span",{class:"mono",style:"font-weight:600",text:r.avg.toFixed(1)}),
+    ]))),
+  ]));
+
+  kids.push(card([
+    head("Take it with you"),
+    el("div",{class:"card-pad",style:"padding-top:9px;display:flex;flex-direction:column;gap:8px"},[
+      el("button",{class:"btn wide",text:"Copy the plan to the group chat",onclick:copyPlan}),
+      el("button",{class:"btn wide",text:"Download the trip recap",onclick:saveRecap}),
+      el("div",{class:"tiny muted",text:"The recap pulls in the log, the ratings and the plan you actually ran. Worth doing on the drive home Monday."}),
+    ]),
+  ]));
+
+  paint(p, kids);
+}
+function stamp(ts){
+  return new Intl.DateTimeFormat("en-US",{ timeZone:"America/Los_Angeles",
+    weekday:"short", hour:"numeric", minute:"2-digit" }).format(new Date(ts));
+}
+function postLog(){
+  const t = document.getElementById("logText");
+  if (!t) return;
+  const text = t.value.trim();
+  if (!text) return;
+  if (!state.me){ go("now"); return; }
+  addToCollection("log", { who:state.me, text, ts:Date.now() });
+  t.value = "";
+}
+
+/* =====================================================================
+   EXPORTS
+   ===================================================================== */
+function planText(){
+  const L = ["NINE OVER TIOGA — Yosemite, Sept 4–8 2026", ""];
+  for (const day of DAYS){
+    L.push(day.label.toUpperCase() + " " + day.date.slice(5) + " — " + day.name);
+    if (day.kind === "board"){
+      for (const b of day.board) L.push("  " + (b.t === "—" ? "open " : fmt(hm(b.t)).padEnd(6)) + " " + b.title);
+    } else {
+      const res = runChain(day, state.plan[day.id]);
+      L.push("  [" + res.variant.name + "]");
+      for (const r of res.rows){
+        L.push("  " + fmt(r.start).padEnd(6) + " " +
+          (r.k === "drive" ? "drive → " + (PLACES[r.to]?.name || "") + " (" + dur(r.min) + ")" : r.title));
+      }
+      L.push("  back at " + fmt(res.endMin) + " · " + dur(res.driveMin) + " driving");
+    }
+    L.push("");
+  }
+  L.push("Last fuel before Yosemite: Tioga Gas Mart, Lee Vining (6:30a–9p).");
+  L.push("No gas in Yosemite Valley. Crane Flat and Wawona only.");
+  L.push("Text YNPTraffic to 333111 for live park traffic alerts.");
+  return L.join("\n");
+}
+async function copyPlan(){
+  const txt = planText();
+  try {
+    await navigator.clipboard.writeText(txt);
+    toast("Plan copied — paste it in the group chat.");
+  } catch(e){
+    const ta = el("textarea",{ style:"position:fixed;top:0;left:0;opacity:0" });
+    ta.value = txt; document.body.append(ta); ta.select();
+    try { document.execCommand("copy"); toast("Plan copied."); }
+    catch(e2){ toast("Couldn't copy — select the text on the Plan tab instead."); }
+    ta.remove();
+  }
+}
+async function saveRecap(){
+  const L = ["# Nine Over Tioga", "", "Yosemite, Labor Day weekend 2026. Nine of us, three cars, about a thousand miles.", ""];
+  L.push("## The plan we actually ran", "", "```", planText(), "```", "");
+  const entries = state.log.slice().sort((a,b)=>a.ts-b.ts);
+  if (entries.length){
+    L.push("## The log", "");
+    for (const e of entries) L.push("**" + (byId(e.who)?.name || "Someone") + "** · " + stamp(e.ts) + "  \n" + e.text + "\n");
+  }
+  const rated = ACTS.map(a => {
+    const all = Object.values(state.ratings[a.id] || {});
+    return { nm:a.nm, n:all.length, avg: all.length ? all.reduce((x,y)=>x+y,0)/all.length : 0 };
+  }).filter(r => r.n).sort((a,b)=>b.avg-a.avg);
+  if (rated.length){
+    L.push("## How it ranked", "");
+    rated.forEach((r,i) => L.push((i+1) + ". **" + r.nm + "** — " + r.avg.toFixed(1) + "/5 (" + r.n + ")"));
+    L.push("");
+  }
+  L.push("---", "", "> Leave with deeper friendships. — Kshitiz");
+  await offer("nine-over-tioga-recap.md", L.join("\n"), "Recap saved.");
+}
+async function saveOffline(){
+  const html = "<!doctype html>\n" + document.documentElement.outerHTML;
+  await offer("nine-over-tioga-offline.html", html, "Offline copy saved. Open it from Files with no signal.");
+}
+async function offer(filename, data, okMsg){
+  if (!DOWNLOADS){ toast("Saving isn't available in this view. Try opening the artifact in a browser tab."); return; }
+  try { await DOWNLOADS.save({ filename, data }); toast(okMsg); }
+  catch(e){
+    const c = e && e.code;
+    if (c === "declined") return;
+    if (c === "rate_limited") toast("One save at a time — try again in a moment.");
+    else if (c === "too_large") toast("That file is too big to save.");
+    else toast("Couldn't save the file here.");
+  }
+}
+let toastT = null;
+function toast(msg){
+  let t = document.getElementById("toast");
+  if (!t){
+    t = el("div",{ id:"toast", style:"position:fixed;left:50%;transform:translateX(-50%);bottom:22px;z-index:99;" +
+      "background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:13.5px;" +
+      "box-shadow:0 6px 24px rgba(0,0,0,.28);max-width:88vw;text-align:center;line-height:1.35" });
+    document.body.append(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = "1";
+  clearTimeout(toastT);
+  toastT = setTimeout(()=>{ t.style.opacity = "0"; t.style.transition = "opacity .4s ease"; }, 3200);
+}
+
+/* =====================================================================
+   TABS + BOOT
+   ===================================================================== */
+const TABS = [
+  { k:"now",     t:"Now",       fn:renderNow },
+  { k:"plan",    t:"Plan",      fn:renderPlan },
+  { k:"drive",   t:"Drive",     fn:renderDrive },
+  { k:"crowds",  t:"Crowds",    fn:renderCrowds },
+  { k:"map",     t:"Map",       fn:renderMap },
+  { k:"do",      t:"Do",        fn:renderDo },
+  { k:"crew",    t:"Crew",      fn:renderCrew },
+  { k:"offline", t:"No signal", fn:renderOffline },
+  { k:"log",     t:"Log",       fn:renderLog },
+];
+function buildRail(){
+  const rail = document.getElementById("rail");
+  rail.replaceChildren.apply(rail, TABS.map(tb => el("button",{
+    role:"tab", id:"tab-"+tb.k, "aria-selected":String(state.tab === tb.k),
+    "aria-controls":"p-"+tb.k, text:tb.t, onclick:()=>go(tb.k),
+  })));
+}
+function go(k){
+  state.tab = k;
+  LS.set("tab", k);
+  paintTabs();
+  const btn = document.getElementById("tab-"+k);
+  if (btn && btn.scrollIntoView) btn.scrollIntoView({ block:"nearest", inline:"center", behavior:"smooth" });
+  window.scrollTo({ top:0, behavior:"smooth" });
+}
+function paintTabs(){
+  for (const tb of TABS){
+    const b = document.getElementById("tab-"+tb.k);
+    if (b) b.setAttribute("aria-selected", String(state.tab === tb.k));
+    const p = document.getElementById("p-"+tb.k);
+    if (p) p.hidden = (state.tab !== tb.k);
+  }
+}
+let rendering = false;
+function render(){
+  if (rendering) return;
+  rendering = true;
+  try {
+    const ta = document.getElementById("logText");
+    const draft = ta ? ta.value : null;
+    for (const tb of TABS){ try { tb.fn(); } catch(e){ console.error(tb.k, e); } }
+    if (draft){ const ta2 = document.getElementById("logText"); if (ta2) ta2.value = draft; }
+    paintTabs();
+    tickClock();
+  } finally { rendering = false; }
+}
+function tickClock(){
+  const now = paNow();
+  const ct = document.getElementById("clockTime");
+  const cd = document.getElementById("clockDay");
+  if (ct) ct.textContent = fmt(now.min);
+  if (cd){
+    const i = dayIndexFor(now.date);
+    cd.textContent = i >= 0 ? now.wd + " · day " + (i+1) + " of 5" : now.wd + " · " + TZ_LABEL;
+  }
+}
+
+(function boot(){
+  const nowD = paNow();
+  const i = dayIndexFor(nowD.date);
+  state.viewDay = LS.get("viewDay", null) || (i >= 0 ? DAYS[i].id : "sat");
+  state.tab = LS.get("tab", "now");
+  if (!TABS.some(t => t.k === state.tab)) state.tab = "now";
+  buildRail();
+  render();
+  setInterval(tickClock, 20000);
+  let lastMin = nowD.min;
+  setInterval(() => {
+    const n = paNow();
+    if (n.min !== lastMin){ lastMin = n.min; if (!askState.busy && (state.tab === "now" || state.tab === "plan")) render(); }
+  }, 30000);
+
+  initDb();
+  (async () => {
+    try { DOWNLOADS = await window.claude?.use?.("downloads") ?? null; } catch(e){ DOWNLOADS = null; }
+    try { SAMPLE = await window.claude?.use?.("sample") ?? null; } catch(e){ SAMPLE = null; }
+    render();
+  })();
+})();
+
+/* keep viewDay sticky */
+window.addEventListener("beforeunload", () => { LS.set("viewDay", state.viewDay); });
+</script>
