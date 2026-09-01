@@ -1,4 +1,4 @@
-<title>Nine Over Tioga</title>
+<title>Yosemite Standard Time</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap">
@@ -65,18 +65,19 @@ header.top{
   position:sticky; top:0; z-index:60; background:var(--bg);
   border-bottom:1px solid var(--line);
 }
-.brandrow{display:flex; align-items:center; gap:10px; padding:12px 16px 8px}
+.brandrow{display:flex; align-items:center; gap:10px; padding:12px 14px 8px}
 .mark{
   width:34px; height:34px; flex:none; border-radius:8px; background:var(--ink);
   display:grid; place-items:center;
 }
 .mark svg{display:block}
-.brand h1{font-size:19px; font-weight:800; line-height:1.05}
+.brand{min-width:0}
+.brand h1{font-size:17px; font-weight:800; line-height:1.1; letter-spacing:-.02em}
 .brand .sub{
-  font-family:var(--f-mono); font-size:10.5px; letter-spacing:.1em;
-  text-transform:uppercase; color:var(--ink-3); margin-top:2px;
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--ink-3); margin-top:3px; white-space:nowrap;
 }
-.clockbox{margin-left:auto; text-align:right; flex:none}
+.clockbox{margin-left:auto; text-align:right; flex:none; padding-left:4px}
 .clockbox .t{font-family:var(--f-mono); font-size:17px; font-weight:600; line-height:1}
 .clockbox .d{font-family:var(--f-mono); font-size:10px; color:var(--ink-3); letter-spacing:.06em; text-transform:uppercase; margin-top:3px}
 
@@ -330,8 +331,8 @@ input::placeholder, textarea::placeholder{color:var(--ink-3)}
       </svg>
     </div>
     <div class="brand">
-      <h1>Nine Over Tioga</h1>
-      <div class="sub">Yosemite · Labor Day 2026</div>
+      <h1>Yosemite Standard Time</h1>
+      <div class="sub">Nine of us · Sept 2026</div>
     </div>
     <div class="clockbox">
       <div class="t mono" id="clockTime">--:--</div>
@@ -345,7 +346,6 @@ input::placeholder, textarea::placeholder{color:var(--ink-3)}
   <section role="tabpanel" id="p-now"    aria-label="Now"></section>
   <section role="tabpanel" id="p-plan"   aria-label="Plan" hidden></section>
   <section role="tabpanel" id="p-drive"  aria-label="Drive" hidden></section>
-  <section role="tabpanel" id="p-crowds" aria-label="Crowds" hidden></section>
   <section role="tabpanel" id="p-map"    aria-label="Map" hidden></section>
   <section role="tabpanel" id="p-do"     aria-label="Do" hidden></section>
   <section role="tabpanel" id="p-crew"   aria-label="Crew" hidden></section>
@@ -851,7 +851,6 @@ const state = {
 };
 
 let DB = null;                 /* db namespace once resolved, else null */
-let SAMPLE = null;
 let DOWNLOADS = null;
 let syncMode = "local";        /* 'local' | 'live' */
 
@@ -942,74 +941,6 @@ function flag(tone, strongTxt, rest){
 
 function paint(node, kids){
   node.replaceChildren.apply(node, kids.filter(k => k !== null && k !== undefined && k !== false));
-}
-
-/* =====================================================================
-   ASK — a question box wired to Claude, on the viewer's own account.
-   Hidden entirely when the capability isn't available or is declined.
-   ===================================================================== */
-const askState = { q:"", a:"", busy:false, err:"" };
-let askCtl = null;
-
-function askContext(){
-  const bits = ["You are a trip assistant for nine friends visiting Yosemite over Labor Day weekend 2026 (Fri 4 – Mon 7 September).",
-    "Answer only from the trip facts below plus general Yosemite knowledge. Be concrete and brief — five sentences at most. If you do not know, say so and name who to call.",
-    "", "TRIP FACTS:",
-    "- Nine people, three cars, based at: " + base().nm + ". " + base().blurb,
-    "- Saturday: leave the Bay Area 5:00a, Sonora Pass (CA-108) to Mono Lake ~11:15a, fuel and lunch at Lee Vining (LAST FUEL before the park), enter at Tioga Pass ~1:35p, then Tenaya Lake and Olmsted Point, Glacier Point for the 7:20p sunset, back to base late.",
-    "- Sunday: leave 4:15a, Tunnel View for the 6:33a sunrise, park at Curry Village by 7:20a, Mist Trail to Nevada Fall (6.6 mi, 2,200 ft), Valley floor, back ~6:45p.",
-    "- Monday: checkout 11:00a, brunch in Oakhurst, Sugar Pine Railroad at Fish Camp 1:00p, then split — one car straight to SFO for a 9:30p flight, the rest to Palo Alto.",
-    "- No entrance reservations are required in Yosemite in 2026. Entry is $35 per vehicle, good 7 days.",
-    "- There is NO fuel in Yosemite Valley. Fuel is at Lee Vining, Crane Flat and Wawona.",
-    "- Cell service is unreliable outside eastern Yosemite Valley. Tioga Road and Glacier Point have essentially none.",
-    "- Park-wide fire restrictions are in effect below 8,000 ft and smoke is possible.",
-    "- In September the waterfalls run low; the Mist Trail will be dry.",
-  ];
-  return bits.join("\n");
-}
-function askCard(){
-  if (!SAMPLE) return null;
-  const out = el("div",{ class:"hint", style:"white-space:pre-wrap;min-height:20px",
-    text: askState.busy && !askState.a ? "Thinking…" : (askState.err || askState.a) });
-  const box = el("input",{ type:"text", value:askState.q,
-    placeholder:"What if it's smoky? Where do we eat near Curry?",
-    oninput:(e)=>{ askState.q = e.target.value; } });
-  const ask = el("button",{ class:"btn go", text: askState.busy ? "Asking…" : "Ask",
-    disabled: askState.busy || null, onclick:runAsk });
-  const stop = el("button",{ class:"btn", text:"Stop", onclick:()=>askCtl && askCtl.abort() });
-  box.addEventListener("keydown", e => { if (e.key === "Enter" && !askState.busy) runAsk(); });
-  return card([
-    head("Ask about the trip", "uses your Claude account"),
-    el("div",{ class:"card-pad", style:"padding-top:9px;display:flex;flex-direction:column;gap:8px" },[
-      box,
-      el("div",{class:"btnrow"},[ ask, askState.busy ? stop : null ]),
-      (askState.a || askState.err || askState.busy) ? out : null,
-      el("div",{class:"tiny muted",text:"Needs signal. It doesn't know today's road or fire status — check the links on the Drive tab for that."}),
-    ]),
-  ]);
-}
-async function runAsk(){
-  const q = (askState.q || "").trim();
-  if (!q || askState.busy || !SAMPLE) return;
-  askState.busy = true; askState.a = ""; askState.err = "";
-  askCtl = new AbortController();
-  render();
-  try {
-    const res = await SAMPLE(askContext() + "\n\nQuestion: " + q, {
-      signal: askCtl.signal,
-      onText: ({ text }) => { askState.a = text; render(); },
-    });
-    askState.a = res.text;
-  } catch(e){
-    const c = e && e.code;
-    askState.a = (e && e.text) || "";
-    if (c === "cancelled")           askState.err = askState.a ? "" : "Stopped.";
-    else if (c === "not_granted")  { SAMPLE = null; }
-    else if (c === "rate_limited")   askState.err = "Too many questions at once — wait a moment.";
-    else                             askState.err = "Couldn't reach Claude. You're probably offline.";
-  } finally {
-    askState.busy = false; askCtl = null; render();
-  }
 }
 
 /* =====================================================================
@@ -1153,7 +1084,6 @@ function renderNow(){
     kids.push(card([ head(day.label + " — the board"), boardRows(day, now) ]));
   }
 
-  const ask = askCard(); if (ask) kids.push(ask);
   kids.push(quickJump());
   paint(p, kids);
 }
@@ -1244,7 +1174,7 @@ function quickJump(){
   return el("div",{class:"card"},[
     head("Jump to"),
     el("div",{class:"card-pad",style:"padding-top:8px;display:flex;flex-wrap:wrap;gap:8px"},[
-      ["No signal card","offline"],["Fuel plan","drive"],["Crowd levels","crowds"],
+      ["No signal card","offline"],["Fuel plan","drive"],["Crowd levels","drive"],
       ["Valley map","map"],["The log","log"],
     ].map(([t,k]) => el("button",{class:"btn",onclick:()=>go(k),text:t}))),
   ]);
@@ -1259,7 +1189,7 @@ function renderPlan(){
   const kids = [ baseCard() ];
   kids.push(el("div",{class:"seg"}, DAYS.map(d => el("button",{
     "aria-pressed": String(state.viewDay === d.id),
-    onclick:()=>{ state.viewDay = d.id; render(); },
+    onclick:()=>{ state.viewDay = d.id; LS.set("viewDay", d.id); render(); },
   },[ el("span",{style:"display:block",text:d.label}),
       el("span",{style:"display:block;font-size:9.5px;font-weight:500;opacity:.7",text:d.date.slice(8)}) ]))));
 
@@ -1446,20 +1376,20 @@ function renderDrive(){
     ]))),
   ]));
 
+  for (const c of crowdCards()) kids.push(c);
   paint(p, kids);
 }
 
 /* =====================================================================
    CROWDS
    ===================================================================== */
-function renderCrowds(){
-  const p = document.getElementById("p-crowds");
+function crowdCards(){
   const now = paNow();
   const inTrip = dayIndexFor(now.date) >= 0;
   const hourIdx = Math.floor(now.min/60) - CROWD_H0;
-  const kids = [];
+  const out = [];
 
-  kids.push(card([
+  out.push(card([
     head("Rush levels", inTrip ? "now " + fmt(now.min) : "typical holiday weekend"),
     el("div",{class:"card-pad hint sm",style:"padding-top:7px",
       text:"Modelled from reported Labor Day patterns — not a live feed. Treat it as a good guess about when to move, not a measurement."}),
@@ -1481,7 +1411,7 @@ function renderCrowds(){
     })),
   ]));
 
-  kids.push(card([
+  out.push(card([
     head("What this means for you"),
     el("div",{class:"card-pad",style:"padding-top:9px;display:flex;flex-direction:column;gap:8px"},[
       flag("ok","Your Sunday plan is already the right answer.","Tunnel View at 6:15a and parked by 7:20a puts you ahead of everything on this page. The 4:15a alarm is the whole reason it works."),
@@ -1489,8 +1419,7 @@ function renderCrowds(){
       flag("cool","Glacier Point at sunset means roadside parking.","Arriving 18:30 on a Saturday, the lot will be full. Expect to park along the road and walk 5–10 minutes. Budget it."),
     ]),
   ]));
-
-  paint(p, kids);
+  return out;
 }
 
 /* =====================================================================
@@ -1857,7 +1786,7 @@ function renderOffline(){
         "Cell service dies on Tioga Road, at Glacier Point and across most of the Valley. A screenshot works on a dead battery's last 2%; this app does not." ]),
     ]),
     el("div",{class:"offcard"},[
-      el("h2",{text:"Nine Over Tioga — no signal card"}),
+      el("h2",{text:"Yosemite Standard Time — no signal card"}),
       el("div",{class:"offgrid"}, rows.map(([k,v]) => el("div",{class:"offrow"},[
         el("span",{class:"k mono",text:k}), el("span",{class:"v",text:v}),
       ]))),
@@ -1991,7 +1920,7 @@ function postLog(){
    EXPORTS
    ===================================================================== */
 function planText(){
-  const L = ["NINE OVER TIOGA — Yosemite, Sept 4–8 2026", ""];
+  const L = ["YOSEMITE STANDARD TIME — Sept 4–8 2026", ""];
   for (const day of DAYS){
     L.push(day.label.toUpperCase() + " " + day.date.slice(5) + " — " + day.name);
     if (day.kind === "board"){
@@ -2026,7 +1955,7 @@ async function copyPlan(){
   }
 }
 async function saveRecap(){
-  const L = ["# Nine Over Tioga", "", "Yosemite, Labor Day weekend 2026. Nine of us, three cars, about a thousand miles.", ""];
+  const L = ["# Yosemite Standard Time", "", "Yosemite, Labor Day weekend 2026. Nine of us, three cars, about a thousand miles.", ""];
   L.push("## The plan we actually ran", "", "```", planText(), "```", "");
   const entries = state.log.slice().sort((a,b)=>a.ts-b.ts);
   if (entries.length){
@@ -2043,11 +1972,11 @@ async function saveRecap(){
     L.push("");
   }
   L.push("---", "", "> Leave with deeper friendships. — Kshitiz");
-  await offer("nine-over-tioga-recap.md", L.join("\n"), "Recap saved.");
+  await offer("yosemite-standard-time-recap.md", L.join("\n"), "Recap saved.");
 }
 async function saveOffline(){
   const html = "<!doctype html>\n" + document.documentElement.outerHTML;
-  await offer("nine-over-tioga-offline.html", html, "Offline copy saved. Open it from Files with no signal.");
+  await offer("yosemite-standard-time-offline.html", html, "Offline copy saved. Open it from Files with no signal.");
 }
 async function offer(filename, data, okMsg){
   if (!DOWNLOADS){ toast("Saving isn't available in this view. Try opening the artifact in a browser tab."); return; }
@@ -2081,8 +2010,7 @@ function toast(msg){
 const TABS = [
   { k:"now",     t:"Now",       fn:renderNow },
   { k:"plan",    t:"Plan",      fn:renderPlan },
-  { k:"drive",   t:"Drive",     fn:renderDrive },
-  { k:"crowds",  t:"Crowds",    fn:renderCrowds },
+  { k:"drive",   t:"Roads",     fn:renderDrive },
   { k:"map",     t:"Map",       fn:renderMap },
   { k:"do",      t:"Do",        fn:renderDo },
   { k:"crew",    t:"Crew",      fn:renderCrew },
@@ -2099,7 +2027,7 @@ function buildRail(){
 function go(k){
   state.tab = k;
   LS.set("tab", k);
-  paintTabs();
+  render();
   const btn = document.getElementById("tab-"+k);
   if (btn && btn.scrollIntoView) btn.scrollIntoView({ block:"nearest", inline:"center", behavior:"smooth" });
   window.scrollTo({ top:0, behavior:"smooth" });
@@ -2113,13 +2041,16 @@ function paintTabs(){
   }
 }
 let rendering = false;
+/* Only the visible tab is built. Switching tabs builds the one you moved to,
+   so a checkbox tick touches one panel instead of nine. */
 function render(){
   if (rendering) return;
   rendering = true;
   try {
     const ta = document.getElementById("logText");
     const draft = ta ? ta.value : null;
-    for (const tb of TABS){ try { tb.fn(); } catch(e){ console.error(tb.k, e); } }
+    const tb = TABS.find(t => t.k === state.tab) || TABS[0];
+    try { tb.fn(); } catch(e){ console.error(tb.k, e); }
     if (draft){ const ta2 = document.getElementById("logText"); if (ta2) ta2.value = draft; }
     paintTabs();
     tickClock();
@@ -2148,17 +2079,14 @@ function tickClock(){
   let lastMin = nowD.min;
   setInterval(() => {
     const n = paNow();
-    if (n.min !== lastMin){ lastMin = n.min; if (!askState.busy && (state.tab === "now" || state.tab === "plan")) render(); }
+    if (n.min !== lastMin){ lastMin = n.min; if (state.tab === "now" || state.tab === "plan") render(); }
   }, 30000);
 
   initDb();
   (async () => {
     try { DOWNLOADS = await window.claude?.use?.("downloads") ?? null; } catch(e){ DOWNLOADS = null; }
-    try { SAMPLE = await window.claude?.use?.("sample") ?? null; } catch(e){ SAMPLE = null; }
     render();
   })();
 })();
 
-/* keep viewDay sticky */
-window.addEventListener("beforeunload", () => { LS.set("viewDay", state.viewDay); });
 </script>
